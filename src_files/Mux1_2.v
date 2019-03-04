@@ -20,7 +20,24 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module MUX(
-
-    );
+module Mux1_2#(parameter DATA_BITS = 32)(mux_select,mux_data_in_0,mux_data_in_1,mux_data_out);
+    input mux_select;
+    input [DATA_BITS-1:0]mux_data_in_0;
+    input [DATA_BITS-1:0]mux_data_in_1;
+    output reg[DATA_BITS-1:0]mux_data_out;
+        
+    initial
+    begin
+        mux_data_out=0;
+    end
+    
+    always@(*)
+    begin
+        if (mux_select)
+            mux_data_out <= mux_data_in_1;
+        else
+            mux_data_out <= mux_data_in_0;
+    end
+    
+    
 endmodule
