@@ -35,18 +35,18 @@ module controler(
 	output jal,
 	output jmp,
 	output jr,
-	output ram_sel,
+	output my_A_signal,
 	output syscall,
-	output my_signal
+	output my_B_signal
     );
     
-	assign my_signal = 0;	// reserved for change
-	assign ram_sel = 2'b00;	
+	assign my_B_signal = 0;	// reserved for change
+	assign my_A_signal = 2'b00;	
 	/* reserved for change, ramsel = 2'b00 --> 32-bit rw, 2'b01 --> 16-bit rw, 2'b11 --> 8-bit rw*/
 
     wire SLL, SRA, SRL, ADD, ADDU, SUB, AND, OR, NOR, SLT, SLTU, JR, SYSCALL;
-	wire J,JAL,BEQ,BNE,ADDI,ADDIU,SLTI,ANDI,ORI,LW,SRAV,SLTIU,SW;
-	wire S3,S2,S1,S0;
+	wire J, JAL, BEQ, BNE, ADDI, ADDIU, SLTI, ANDI, ORI, LW, SRAV, SLTIU, SW;
+	wire S3, S2, S1, S0;
 
 /* R-type */
 	assign SLL = (op == 6'd0) & (func == 6'd0);
