@@ -38,25 +38,27 @@ total_cycles	output[31:0]	总周期数
 uncondi_branch_num	output[31:0]	无条件周期数
 condi_branch_num	output[31:0]	有条件分指数
 led_data_in	output[31:0]	数码管输出数据
+led_cpu_enable 系统调用控制display
 */
 
  //attention: ram_addr [11:0]
 
+
+ //添加 led_cpu_enable syscall 34
+
 module CPU(clk, rst, pause, rom_data_out, ram_data_out, rom_addr, ram_addr,
-		   ram_data_in, ram_sel, ram_rw, 
-		   total_cycles, uncondi_branch_num, condi_branch_num,led_cpu_enable, led_data_in);
+			ram_data_in, ram_sel, ram_rw, total_cycles, uncondi_branch_num, condi_branch_num, led_data_in, led_cpu_enable);
 
 	input clk, rst, pause;
 	input[31:0] rom_data_out, ram_data_out;
-	output reg[9:0] ram_addr, rom_addr;
-	output reg[31:0] ram_data_in;
-	output [31:0]uncondi_branch_num;
-	output [31:0]total_cycles;
-	output [31:0]condi_branch_num;
-	output [31:0]led_data_in;
-	output reg[3:0] ram_sel; 
-	output ram_rw;
+	output[9:0] ram_addr, rom_addr;
+	output[31:0] ram_data_in;
+	output[31:0] uncondi_branch_num, total_cycles, condi_branch_num;
+	output[31:0] led_data_in;
+	output[3:0] ram_sel; 
+	output ram_rw, led_cpu_enable;
     
+    reg go_state;
 
     //解释指令
     wire[5:0] op, func;
@@ -85,13 +87,12 @@ module CPU(clk, rst, pause, rom_data_out, ram_data_out, rom_addr, ram_addr,
     					.alu_op(alu_op), .alu_src_b(alu_src_b), .reg_write(reg_write), .reg_dst(reg_dst),
     					.signed_ext(signed_ext), .jal(jal), .jmp(jmp), .jr(jr),
     					.my_A_signal(my_A_signal), .syscall(syscall), .my_B_signal(bgez));
+    assign ram_rw = mem_write;
     
     /*RegFile*/
     wire[4:0] reg1_no, reg2_no, reg_no_in;
     wire[4:0] reg_no_in_mid;
-
     wire[31:0] reg_data_in;
-
     wire[31:0] reg1_data, reg2_data;
 
     /*Extender*/
@@ -110,7 +111,8 @@ module CPU(clk, rst, pause, rom_data_out, ram_data_out, rom_addr, ram_addr,
    	Mux1_2 #(5) reg_no_in_mux_1(.mux_select(reg_dst), .mux_data_in_0(rt), .mux_data_in_1(rd), .mux_data_out(reg_no_in_mid));
    	Mux1_2 #(5) reg_no_in_mux_2(.mux_select(jal), .mux_data_in_0(reg_no_in_mid), .mux_data_in_1(5'b11111), .mux_data_out(reg_no_in_mid));
    	Mux1_2 #(32) alu_srcb_mux(.mux_select(alu_src_b), .mux_data_in_0(reg2_data), .mux_data_in_1(imm_signed_extend), .mux_data_out(alu_srcb_data));
-
+    
+    
 
     
     /*ALU*/
@@ -126,21 +128,38 @@ module CPU(clk, rst, pause, rom_data_out, ram_data_out, rom_addr, ram_addr,
     
 
 
-    
-
-    
-
-
-    
-
-    
-
     /*PC register*/
     wire pc_enable;
     wire[31:0] pc_data_in;
     wire[31:0] pc_data_out;
     Register #(32) pc(.clk(clk), .rst(rst), .reg_enable(pc_enable), .reg_data_in(pc_data_in), .reg_data_out(pc_data_out));
-    
+    assign rom_addr = pc_data_out[11:2];
+
+    wire[31:0] to_reg_data, din_jal;
+    wire[31:0] next_pc, jr_pc, jal_pc;
+    assign next_pc = pc_data_out + 4;
+    Mux1_2 #(32) mem_to_reg_mux(.mux_select(mem_to_reg), .mux_data_in_0(alu_result1), .mux_data_in_1(ram_data_out), .mux_data_out(to_reg_data));
+    Mux1_2 #(32) din_jal_mux(.mux_select(jal), .mux_data_in_0(to_reg_data), .mux_data_in_1(next_pc), .mux_data_out(din_jal));
+    assign reg_data_in = din_jal;
+    //左移2位
+    assign jr_pc = jaddr_unsigned_extend << 2;
+    assign jal_pc = imm_extend << 2 + next_pc;
+
+    //pc_enable  
+    wire halt；
+    assign halt = ((reg1_data != 34) & syscall);
+    assign led_cpu_enable = ((reg1_data == 34) & syscall);
+    assign led_data_in = reg2_data;
+    assign pc_enable = go_state | (!halt);
+
+    //pc_select 
+    wire[1:0] pc_select
+    assign pc_select[1] = uncon_if | jal;
+    assign pc_select[0] = con_if | jr;
+
+    Mux2_4 #(32) pc_mux(.mux_select(pc_select), .mux_data_in_0(next_pc), .mux_data_in_1(jal_pc), .mux_data_in_2(jr_pc), .mux_data_in_3(reg1_data), .mux_data_out(pc_data_in));
+
+
 
     /*counter*/
     wire con_if, uncon_if;
@@ -149,46 +168,27 @@ module CPU(clk, rst, pause, rom_data_out, ram_data_out, rom_addr, ram_addr,
 	Counter #(32) uncondi_branch_num_counter(.clk(clk), .rst(rst), .counter_enable(uncon_if), .counter_data_out(uncondi_branch_num));
     
 
-
+    //缺少
+    //ram ram_addr, ram_data_in, ram_sel
+    assign ram_data_in = reg2_data;
+    //conif uncon_if
    
+    initial begin
+    	go_state <= 0;
+    end
 
 
 
-   wire[1:0] pc_select
-  
-   Mux2_4 #(32) pc_mux(.mux_select(pc_select), .mux_data_in_0(), .mux_data_in_1(), .mux_data_in_2(), .mux_data_in_3(), .mux_data_out());
-
-
-
-    always @(posedge clk or posedge rst or posedge pause) begin
+    always @(posedge rst or posedge pause) begin
     	if (rst) begin
-    		// reset
-    		rom_addr <= 0;
-    		ram_addr <= 0;
-    		rom_data_out <= 0;
-    		ram_data_out <= 0;
-    		ram_data_in <= 0;
-    		uncondi_branch_num <= 0;
-    		total_cycles <= 0 ;
-    		condi_branch_num <= 0;
-    		led_data_in <= 0;
-    		ram_sel <= 0;
+    		go_state <= 0;
 
-    		
     	end
-
     	else if (pause) begin
-    		
-    	end
-
-    	else if() begin
-    		
+    		go_state <= ! go_state;
     	end
     end
 
-=======
-module CPU();
->>>>>>> 73a273de84ed0c5ef4817b585c023492adde6cf8
 endmodule
 
 
