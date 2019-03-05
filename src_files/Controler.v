@@ -41,6 +41,8 @@ module controler(
     );
     
 	assign my_signal = 0;	// reserved for change
+	assign ram_sel = 2'b00;	
+	/* reserved for change, ramsel = 2'b00 --> 32-bit rw, 2'b01 --> 16-bit rw, 2'b11 --> 8-bit rw*/
 
     wire SLL, SRA, SRL, ADD, ADDU, SUB, AND, OR, NOR, SLT, SLTU, JR, SYSCALL;
 	wire J,JAL,BEQ,BNE,ADDI,ADDIU,SLTI,ANDI,ORI,LW,SRAV,SLTIU,SW;
