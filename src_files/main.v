@@ -27,7 +27,7 @@ module main(clk,SW,SEG,AN);
     output [7:0]AN;
     
     wire clk_N;
-    wire start,pause,rst;
+    wire go,rst;
     wire ram_rw,led_cpu_enable;
     wire [2:0]display_op;
     wire [3:0]ram_sel;
@@ -45,11 +45,11 @@ module main(clk,SW,SEG,AN);
     
     
     
-    Convert convert(.clk(clk),.SW(SW),.clk_N(clk_N),.start(start),.pause(pause),.rst(rst),
+    Convert convert(.clk(clk),.SW(SW),.clk_N(clk_N),.go(go),.rst(rst),
                     .ram_display_addr(ram_display_addr),.display_op(display_op));
     
     
-    CPU cpu(.clk(clk_N), .rst(rst), .pause(pause), 
+    CPU cpu(.clk(clk_N), .go(go),
             .rom_data_out(rom_data_out), .ram_data_out(ram_data_out), .rom_addr(rom_addr), 
             .ram_addr(ram_addr),.ram_data_in(ram_data_in), .ram_sel(ram_sel), .ram_rw(ram_rw), 
 			.total_cycles(total_cycles), .uncondi_branch_num(uncondi_branch_num), .condi_branch_num(condi_branch_num), 
