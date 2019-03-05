@@ -20,7 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module main(
-
-    );
+module main(clk,SW,clk_N,SEG,AN);
+    input clk;
+    input [15:0]SW;
+    output clk_N;
+    output [7:0]SEG;
+    output [7:0]AN;
+    
+    
+    
 endmodule
