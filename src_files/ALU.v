@@ -49,19 +49,19 @@ case(alu_op[3:0])
 	4'b0000: 
 	/* alu_op == 0, logical shift left, tested */
 	begin
-		alu_result1 <= alu_a_data << alu_shmat;
+		alu_result1 <= alu_b_data << alu_shmat;
 		alu_result2 <= 0;
 	end
  	4'b0001: 
  	/* alu_op == 1, arithmetic shift right, tested */
  	begin
- 		alu_result1 <= (($signed(alu_a_data)) >>> alu_shmat);
+ 		alu_result1 <= (($signed(alu_b_data)) >>> alu_shmat);
  		alu_result2 <= 0;
  	end
  	4'b0010:
  	/* alu_op == 2, logical shift right, tested */
 	begin
-		alu_result1 <= alu_a_data >> alu_shmat;
+		alu_result1 <= alu_b_data >> alu_shmat;
 		alu_result2 <= 0;
 	end 
  	4'b0011:
