@@ -33,7 +33,7 @@ module LED(
     output reg [7:0] AN     //显示内容输出
     );
 
-    wire clk_p;     //分频为100hz
+    wire clk_p;     //分频为1000hz
     reg [3:0] seg_cnt = 0;
     reg [31:0] cnt = 0;
     reg [31:0] data = 0;
@@ -41,7 +41,7 @@ module LED(
     wire [31:0] uncondi_branch_num_bcd; //无条件周期数的bcd码
     wire [31:0] condi_branch_num_bcd;   //有条件分支数的bcd码
     
-    Divider #(10_000_000) d1(clk,clk_p); //分频为100hz
+    Divider #(100_000) d1(clk,clk_p); //分频为1000hz
     Bcd b1(total_cycles,total_cycles_bcd);  //总周期数bcd模块
     Bcd b2(uncondi_branch_num,uncondi_branch_num_bcd);  //无条件周期数bcd模块
     Bcd b3(condi_branch_num,condi_branch_num_bcd);  //有条件分支数bcd模块
@@ -69,9 +69,9 @@ module LED(
                 endcase
         end
      
-    always@(cnt) //
+    always@(cnt) //根据不同的数码管显示位置来确定seg的值
     begin
-    case (cnt)
+                    case (cnt)
                     
                     3'h0: seg_cnt <= data[3:0]; 
                     
@@ -94,7 +94,7 @@ module LED(
     end  
         
     always @(seg_cnt) //译码
-        begin
+    begin
         
         case (seg_cnt)
         
@@ -133,10 +133,10 @@ module LED(
         default: SEG <= 8'b11111111;
         endcase
         
-        end 
+    end 
     
     always @(cnt) //数码管选择
-                begin
+    begin
                 
                 case (cnt)
                 
@@ -160,7 +160,7 @@ module LED(
                 
                 endcase
                 
-                end     
+    end     
                 
     
 endmodule
@@ -169,8 +169,8 @@ endmodule
 
 module Bcd
 (
-    input [31:0] binary,
-    output reg [31:0] data_bcd
+    input [31:0] binary,    //输入的二进制编码
+    output reg [31:0] data_bcd  //转换后的bcd编码
 );
     
     reg [3:0] bit [7:0];
