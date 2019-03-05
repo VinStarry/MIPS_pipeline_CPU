@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-module Convert(clk, SW, clk_N, go, rst, ram_display_addr, display_op)
+module Convert(clk, SW, clk_N, go, rst, ram_display_addr, display_op);
   input clk;				//时钟信号输入
   input [15:0] SW;			//按键输入
   output clk_N;				//分频后的时钟
