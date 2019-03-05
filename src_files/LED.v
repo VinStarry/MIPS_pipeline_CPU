@@ -61,7 +61,7 @@ module LED(
                 
                 3'b011: data <= uncondi_branch_num_bcd;
  
-                3'b101: data <= condi_branch_num_bcd;
+                3'b111: data <= condi_branch_num_bcd;
 
                 3'b010: data <= ram_display_data_out;
                 
