@@ -40,7 +40,7 @@ end
 
 always @(*)
 begin
-    alu_equal <= (alu_result1 === alu_result2);
+    alu_equal <= (alu_a_data === alu_b_data);
 end
 
 always @(alu_a_data or alu_b_data or alu_op or alu_shmat)
