@@ -5,13 +5,8 @@ module Register #(parameter DATA_BITS = 32)(clk, rst, reg_enable, reg_data_in, r
   input rst;                    				      //为1时，清空为0
   input reg_enable;  							            //为1时，时钟有效，将reg_data_in存入寄存器中
   input [DATA_BITS - 1: 0] reg_data_in;			  //写入数据
-  output reg [DATA_BITS - 1: 0] reg_data_out;	//读出数据
-  reg [DATA_BITS - 1: 0] reg_data;				    //寄存器值
-
-  initial
-  begin
-    reg_data <= 0;
-  end
+  output reg [DATA_BITS - 1: 0] reg_data_out = 0;	//读出数据
+  reg [DATA_BITS - 1: 0] reg_data = 0;				    //寄存器值
 
   always @(posedge clk)
   begin
