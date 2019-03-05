@@ -20,5 +20,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module ROM();
+module ROM(rom_addr,rom_data_out);
+    input [9:0]rom_addr;
+    output [31:0]rom_data_out;
+    
+    
 endmodule

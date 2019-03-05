@@ -43,14 +43,17 @@ led_data_in	output[31:0]	数码管输出数据
  //attention: ram_addr [11:0]
 
 module CPU(clk, rst, pause, rom_data_out, ram_data_out, rom_addr, ram_addr,
-			ram_data_in, ram_sel, ram_rw, total_cycles, uncondi_branch_num, condi_branch_num, led_data_in);
+		   ram_data_in, ram_sel, ram_rw, 
+		   total_cycles, uncondi_branch_num, condi_branch_num,led_cpu_enable, led_data_in);
 
 	input clk, rst, pause;
 	input[31:0] rom_data_out, ram_data_out;
 	output reg[9:0] ram_addr, rom_addr;
 	output reg[31:0] ram_data_in;
-	wire[31:0] uncondi_branch_num, total_cycles, condi_branch_num;
-	wire[31:0] led_data_in;
+	output [31:0]uncondi_branch_num;
+	output [31:0]total_cycles;
+	output [31:0]condi_branch_num;
+	output [31:0]led_data_in;
 	output reg[3:0] ram_sel; 
 	output ram_rw;
     
