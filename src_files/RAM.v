@@ -32,6 +32,16 @@ module RAM(clk,rst,ram_rw,ram_sel,ram_addr,ram_data_in,ram_data_out,ram_display_
     integer i;
     reg [31:0]data[(1<<10)-1:0];
     
+    initial
+    begin
+        ram_data_out=0;
+        ram_display_data_out=0;
+        for (i=0;i<(1<<12-1);i=i+1)
+        begin
+            data[i]=0;
+        end
+    end
+    
     always@(posedge clk)
     begin
         if (rst)
