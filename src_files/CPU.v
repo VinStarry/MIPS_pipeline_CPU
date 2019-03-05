@@ -166,7 +166,7 @@ module CPU(clk, rst, go, rom_data_out, ram_data_out, rom_addr, ram_addr,
 
 
     assign next_pc = pc_data_out + 4;
-    assign b_pc = imm_extend << 2 + next_pc;
+    assign b_pc = (imm_extend << 2) + next_pc;
     assign j_pc = jaddr_unsigned_extend << 2;
     //pc_select   
     assign pc_select[1] = uncon_if;
