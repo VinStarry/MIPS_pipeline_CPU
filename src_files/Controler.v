@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module controler(
+module Controler(
 	input[5:0] op,
 	input[5:0] func,
 	output beq,
@@ -71,9 +71,9 @@ module controler(
 	assign BEQ = (op == 6'd4);
 	assign BNE = (op == 6'd5);
 	assign ADDI = (op == 6'd8);
+	assign ANDI = (op == 6'd12);
 	assign ADDIU = (op == 6'd9);
 	assign SLTI = (op == 6'd10);
-	assign ANDI = (op == 6'd12);
 	assign ORI = (op == 6'd13);
 	assign LW = (op == 6'd35);
 	assign SW = (op == 6'd43);
@@ -85,7 +85,7 @@ module controler(
 	assign alu_src_b = ADDI | ANDI | ADDIU | SLTI | ORI | LW | SW;
 	assign reg_write = SLL | SRA | SRL | ADD | ADDU | SUB | AND | OR | NOR | SLT | SLTU | JAL | ADDI | ANDI | ADDIU | SLTI | ORI | LW;
 	assign syscall = SYSCALL;
-	assign signed_ext = BNE | BEQ | ADDI | ANDI | SLTI | ORI;
+	assign signed_ext = BEQ | BNE | ADDI | SLTI | LW | SW;
 	assign reg_dst = SLL | SRA | SRL | ADD | ADDU | SUB | AND | OR | NOR | SLT | SLTU ;
 	assign beq = BEQ;
 	assign bne = BNE;
@@ -95,7 +95,7 @@ module controler(
 
 	assign S3 = OR | NOR | SLT | SLTU | SLTI | ORI;
 	assign S2 = ADD | ADDU | SUB | AND | SLTU | ADDI | ANDI | ADDIU | LW | SW;
-	assign S1 = SRL | SUB | AND | ANDI | NOR | SLT | SLTI;
+	assign S1 = SRL | SUB | AND | NOR | SLT | ANDI | SLTI;
 	assign S0 = SRA | ADD | ADDU | AND | SLT | ADDI | ANDI | ADDIU | SLTI | LW | SW;
 	assign alu_op = {S3,S2,S1,S0};
     
