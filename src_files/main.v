@@ -50,7 +50,7 @@ module main(clk,SW,SEG,AN);
                     .ram_display_addr(ram_display_addr),.display_op(display_op));
     
     
-    CPU cpu(.clk(clk_N), .go(go),
+    CPU cpu(.clk(clk_N),.rst(rst),.go(go),
             .rom_data_out(rom_data_out), .ram_data_out(ram_data_out), .rom_addr(rom_addr), 
             .ram_addr(ram_addr),.ram_data_in(ram_data_in), .ram_sel(ram_sel), .ram_rw(ram_rw), 
 			.total_cycles(total_cycles), .uncondi_branch_num(uncondi_branch_num), .condi_branch_num(condi_branch_num), 
