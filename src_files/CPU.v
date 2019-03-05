@@ -42,7 +42,7 @@ led_data_in	output[31:0]	数码管输出数据
 
  //attention: ram_addr [11:0]
 
-module CPU(clk, rst, pause, rom_data_out, ram_data_out, rom_addr, ram_addr
+module CPU(clk, rst, pause, rom_data_out, ram_data_out, rom_addr, ram_addr,
 			ram_data_in, ram_sel, ram_rw, total_cycles, uncondi_branch_num, condi_branch_num, led_data_in);
 
 	input clk, rst, pause;
