@@ -54,7 +54,7 @@ module LED(
         case(display_op)
                 3'b000: 
                 begin
-                if(led_cpu_enable == 0) data <= led_data_in;
+                if(led_cpu_enable == 1) data <= led_data_in;
                 end
                 
                 3'b001: data <= total_cycles_bcd;
