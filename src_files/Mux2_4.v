@@ -33,6 +33,8 @@ module Mux2_4#(parameter DATA_BITS = 32)(mux_select,mux_data_in_0,mux_data_in_1,
         mux_data_out=0;
     end
     
+    integer i;
+    
     always@(*)
     begin
         case(mux_select)
