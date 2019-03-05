@@ -19,8 +19,27 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+module Divider #(parameter N = 100_000_000)(
+	input clk, 
+	output reg clk_N
+	);
 
-module Divider(
+reg [31:0] counter;
 
-    );
+initial begin
+    clk_N <= 0;
+    counter <= 0;
+end
+          
+always @(posedge clk)  begin 
+    if (counter == N / 2 - 1)
+    begin
+        clk_N <= !clk_N;
+        counter <= 0;
+    end
+    else 
+    begin 
+        counter <= counter + 1;
+    end
+end                           
 endmodule
