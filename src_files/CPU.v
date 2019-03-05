@@ -163,8 +163,8 @@ module CPU(clk, rst, pause, rom_data_out, ram_data_out, rom_addr, ram_addr,
     /*counter*/
     wire con_if, uncon_if;
     Counter #(32) total_cycles_counter(.clk(clk), .rst(rst), .counter_enable(pc_enable), .counter_data_out(total_cycles));
-	Counter #(32) condi_branch_num_counter(.clk(clk), .rst(rst), .counter_enable(con_if), .counter_data_out(condi_branch_num));
-	Counter #(32) uncondi_branch_num_counter(.clk(clk), .rst(rst), .counter_enable(uncon_if), .counter_data_out(uncondi_branch_num));
+    Counter #(32) condi_branch_num_counter(.clk(clk), .rst(rst), .counter_enable(con_if), .counter_data_out(condi_branch_num));
+    Counter #(32) uncondi_branch_num_counter(.clk(clk), .rst(rst), .counter_enable(uncon_if), .counter_data_out(uncondi_branch_num));
     
      
     //lack: ram ram_addr, ram_data_in, ram_sel
