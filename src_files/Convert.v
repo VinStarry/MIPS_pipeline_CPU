@@ -1,35 +1,19 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2019/03/04 20:39:12
-// Design Name: 
-// Module Name: Convert
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
+module Convert(clk, SW, clk_N, go, rst, ram_display_addr, display_op)
+  input clk;				//时钟信号输入
+  input [15:0] SW;			//按键输入
+  output clk_N;				//分频后的时钟
+  output go;				//暂停、运行
+  output rst;				//为1时，复位
+  output [9:0] ram_display_addr;		//ram显示地址
+  output [2:0] display_op;				//显示内容控制信号
 
 
-module Convert(clk,SW,clk_N,start,pause,rst,ram_display_addr,display_op);
-    input clk;
-    input [15:0]SW;
-    output clk_N;
-    output start;
-    output pause;
-    output rst;
-    output [9:0]ram_display_addr;
-    output [2:0]display_op;
-    
-    
-    
+
+
+
+
 endmodule
+
+  
+拨动翻倍时钟频率
