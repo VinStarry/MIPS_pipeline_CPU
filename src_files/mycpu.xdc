@@ -1,4 +1,5 @@
-
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets SW_IBUF[1]];
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets SW_IBUF[2]];
 ##clock
 set_property -dict { PACKAGE_PIN E3   IOSTANDARD LVCMOS33 } [get_ports { clk }];
 
