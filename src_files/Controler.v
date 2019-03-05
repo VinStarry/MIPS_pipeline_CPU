@@ -35,7 +35,7 @@ module Controler(
 	output jal,
 	output jmp,
 	output jr,
-	output my_A_signal,
+	output [1:0]my_A_signal,
 	output syscall,
 	output my_B_signal
     );
