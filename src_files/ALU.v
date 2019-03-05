@@ -21,6 +21,118 @@
 
 
 module ALU(
-
+	input[31:0] alu_a_data,
+	input[31:0] alu_b_data,
+	input[3:0] alu_op,
+	input[4:0] alu_shmat,
+	output	alu_equal,
+	output reg[31:0] alu_result1,
+	output reg[31:0] alu_result2
     );
+
+assign alu_equal = (alu_result1 === alu_result2);
+reg [63:0] temp_result; /* temp_result is a helper of signed multiply */
+
+initial
+begin
+    alu_result1 <= 0;
+    alu_result2 <= 0;
+end
+
+always @(alu_a_data or alu_b_data or alu_op or alu_shmat)
+case(alu_op[3:0])
+	4'b0000: 
+	/* alu_op == 0, logical shift left, tested */
+	begin
+		alu_result1 <= alu_a_data << alu_shmat;
+		alu_result2 <= 0;
+	end
+ 	4'b0001: 
+ 	/* alu_op == 1, arithmetic shift right, tested */
+ 	begin
+ 		alu_result1 <= (($signed(alu_a_data)) >>> alu_shmat);
+ 		alu_result2 <= 0;
+ 	end
+ 	4'b0010:
+ 	/* alu_op == 2, logical shift right, tested */
+	begin
+		alu_result1 <= alu_a_data >> alu_shmat;
+		alu_result2 <= 0;
+	end 
+ 	4'b0011:
+ 	/* alu_op == 3, unsigned multiply, tested */
+	begin
+		temp_result <= alu_a_data * alu_b_data;
+		alu_result1 <= temp_result[31:0];
+		alu_result2 <= temp_result[63:32];
+	end 
+	4'b0100:
+ 	/* alu_op == 4, unsigned dividison, tested */
+	begin
+		alu_result1 <= $unsigned(alu_a_data) / $unsigned(alu_b_data);
+		alu_result2 <= $unsigned(alu_a_data) % $unsigned(alu_b_data);
+	end
+ 	4'b0101: 
+ 	/* alu_op == 5, Addition */
+	begin
+		alu_result1 <= alu_a_data + alu_b_data;
+		alu_result2 <= 0;
+	end 
+ 	4'b0110:
+ 	/* alu_op == 6, subtraction */
+	begin
+		alu_result1 <= alu_a_data - alu_b_data;
+		alu_result2 <= 0;
+	end 
+ 	4'b0111:
+ 	/* alu_op == 7, bit and */
+	begin
+		alu_result1 <= alu_a_data & alu_b_data;
+		alu_result2 <= 0;
+	end 
+ 	4'b1000:
+ 	/* alu_op == 8, bit or */
+	begin
+		alu_result1 <= alu_a_data | alu_b_data;
+		alu_result2 <= 0;
+	end 
+ 	4'b1001:
+ 	/* alu_op == 9, bit exclusive or */
+	begin
+		alu_result1 <= alu_a_data ^ alu_b_data;
+		alu_result2 <= 0;
+	end 
+ 	4'b1010:
+ 	/* alu_op == 10, bit negative or */
+	begin
+		alu_result1 <= ~(alu_a_data | alu_b_data);
+		alu_result2 <= 0;
+	end 
+ 	4'b1011:
+ 	/* alu_op == 11, signed comparison, tested */
+	begin
+	if(alu_a_data[31] == 1 && alu_b_data[31] == 0)
+	    alu_result1 <= 1;
+    else if(alu_a_data[31] == 0 && alu_b_data[31] == 1)
+        alu_result1 <= 0;
+    else if(alu_a_data[31] == 1 && alu_b_data[31] == 1)
+        alu_result1 = (alu_a_data < alu_b_data) ? 1 : 0;
+    else
+        alu_result1 = (alu_a_data < alu_b_data) ? 1 : 0;
+    alu_result2 <= 0;
+	end 
+ 	4'b1100:
+ 	/* alu_op == 12, unsigned comparison, tested */
+	begin
+		alu_result1 = (alu_a_data < alu_b_data) ? 1 : 0;
+		alu_result2 <= 0;
+	end 
+ 	default:  
+ 	begin
+ 		alu_result1 <= 0;
+ 		alu_result2 <= 0;
+ 	end
+endcase
+
+
 endmodule
