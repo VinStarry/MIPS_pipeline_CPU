@@ -25,12 +25,10 @@ module ALU(
 	input[31:0] alu_b_data,
 	input[3:0] alu_op,
 	input[4:0] alu_shmat,
-	output reg alu_equal,
+	output alu_equal,
 	output reg[31:0] alu_result1,
 	output reg[31:0] alu_result2
     );
-
-reg [63:0] temp_result; /* temp_result is a helper of signed multiply */
 
 initial
 begin
@@ -38,10 +36,8 @@ begin
     alu_result2 <= 0;
 end
 
-always @(*)
-begin
-    alu_equal <= (alu_a_data === alu_b_data);
-end
+
+assign alu_equal = ((alu_a_data == alu_b_data) ? 1 :0);
 
 always @(alu_a_data or alu_b_data or alu_op or alu_shmat)
 begin
@@ -67,9 +63,7 @@ case(alu_op[3:0])
  	4'b0011:
  	/* alu_op == 3, unsigned multiply, tested */
 	begin
-		temp_result <= alu_a_data * alu_b_data;
-		alu_result1 <= temp_result[31:0];
-		alu_result2 <= temp_result[63:32];
+		{alu_result1, alu_result2} <= alu_a_data * alu_b_data;
 	end 
 	4'b0100:
  	/* alu_op == 4, unsigned dividison, tested */
