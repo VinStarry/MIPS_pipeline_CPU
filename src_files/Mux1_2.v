@@ -34,9 +34,9 @@ module Mux1_2#(parameter DATA_BITS = 32)(mux_select,mux_data_in_0,mux_data_in_1,
     always@(*)
     begin
         if (mux_select)
-            mux_data_out <= mux_data_in_1;
+            mux_data_out = mux_data_in_1;
         else
-            mux_data_out <= mux_data_in_0;
+            mux_data_out = mux_data_in_0;
     end
     
     

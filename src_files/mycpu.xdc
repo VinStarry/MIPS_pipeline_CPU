@@ -1,5 +1,3 @@
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets SW[1]_IBUF];
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets SW[2]_IBUF];
 ##clock
 set_property -dict { PACKAGE_PIN E3   IOSTANDARD LVCMOS33 } [get_ports { clk }];
 
@@ -43,3 +41,7 @@ set_property -dict { PACKAGE_PIN P14   IOSTANDARD LVCMOS33 } [get_ports { AN[4] 
 set_property -dict { PACKAGE_PIN T14   IOSTANDARD LVCMOS33 } [get_ports { AN[5] }]; #IO_L14P_T2_SRCC_14 Sch=an[5]
 set_property -dict { PACKAGE_PIN K2    IOSTANDARD LVCMOS33 } [get_ports { AN[6] }]; #IO_L23P_T3_35 Sch=an[6]
 set_property -dict { PACKAGE_PIN U13   IOSTANDARD LVCMOS33 } [get_ports { AN[7] }]; #IO_L23N_T3_A02_D18_14 Sch=an[7]
+
+
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets SW_IBUF[1]];
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets SW_IBUF[2]];

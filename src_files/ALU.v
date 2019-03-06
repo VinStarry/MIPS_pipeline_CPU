@@ -61,13 +61,8 @@ case(alu_op[3:0])
 	4'b0100:
  	/* alu_op == 4, unsigned dividison, tested */
 	begin
-<<<<<<< HEAD
-		alu_result1 = $unsigned(alu_a_data) / $unsigned(alu_b_data);
-		alu_result2 = $unsigned(alu_a_data) % $unsigned(alu_b_data);
-=======
-		alu_result1 <= (alu_a_data) / (alu_b_data);
-		alu_result2 <= (alu_a_data) % (alu_b_data);
->>>>>>> 60e9299e5cd03edac40d2b732ad370a7970e4905
+		alu_result1 = (alu_a_data) / (alu_b_data);
+		alu_result2 = (alu_a_data) % (alu_b_data);
 	end
  	4'b0101: 
  	/* alu_op == 5, Addition */

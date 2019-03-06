@@ -38,11 +38,11 @@ module Mux2_4#(parameter DATA_BITS = 32)(mux_select,mux_data_in_0,mux_data_in_1,
     always@(*)
     begin
         case(mux_select)
-            2'b00:mux_data_out <= mux_data_in_0;
-            2'b01:mux_data_out <= mux_data_in_1;
-            2'b10:mux_data_out <= mux_data_in_2;
-            2'b11:mux_data_out <= mux_data_in_3;
-            default:mux_data_out <= 0;
+            2'b00:mux_data_out = mux_data_in_0;
+            2'b01:mux_data_out = mux_data_in_1;
+            2'b10:mux_data_out = mux_data_in_2;
+            2'b11:mux_data_out = mux_data_in_3;
+            default:mux_data_out = 0;
         endcase
     end
     
