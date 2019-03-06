@@ -41,7 +41,7 @@ module LED(
     wire [31:0] uncondi_branch_num_bcd; //无条件周期数的bcd码
     wire [31:0] condi_branch_num_bcd;   //有条件分支数的bcd码
     
-    Divider #(100_000) d1(clk,clk_p); //分频为1000hz
+    Divider #(2) d1(clk,clk_p); //分频为1000hz
     Bcd b1(total_cycles,total_cycles_bcd);  //总周期数bcd模块
     Bcd b2(uncondi_branch_num,uncondi_branch_num_bcd);  //无条件周期数bcd模块
     Bcd b3(condi_branch_num,condi_branch_num_bcd);  //有条件分支数bcd模块
@@ -69,7 +69,7 @@ module LED(
                 endcase
         end
      
-    always@(cnt) //根据不同的数码管显示位置来确定seg的值
+    always@(*) //根据不同的数码管显示位置来确定seg的值
     begin
                     case (cnt[2:0])
                     
