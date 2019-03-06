@@ -184,7 +184,7 @@ module CPU(clk, rst, go, rom_data_out, ram_data_out, rom_addr, ram_addr,
     assign halt = ((reg1_data != 34) & syscall);
     assign led_cpu_enable = ((reg1_data == 34) & syscall);
     assign led_data_in = reg2_data;
-    assign pc_enable = go | (!halt);
+    assign pc_enable = go & (!halt);
 
 
     /*counter*/  
