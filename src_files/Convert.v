@@ -1,11 +1,11 @@
 `timescale 1ns / 1ps
-module Convert(clk, SW, clk_N, go, rst, ram_display_addr, display_op);
+module Convert#(parameter ADDR_BITS=12)(clk, SW, clk_N, go, rst, ram_display_addr, display_op);
   input clk;				//时钟信号输入
   input [15:0] SW;			//按键输入
   output reg clk_N = 0;				//分频后的时钟
   output go;				//暂停、运行
   output rst;				//为1时，复位
-  output [9:0] ram_display_addr;		//ram地址
+  output [ADDR_BITS-3:0] ram_display_addr;		//ram地址
   output [2:0] display_op;				//显示内容控制信号
   
   parameter  N = 10_000_000;		//分频频率
@@ -35,7 +35,7 @@ module Convert(clk, SW, clk_N, go, rst, ram_display_addr, display_op);
   end
   
   assign display_op[2 : 0] = SW[5: 3];
-  assign ram_display_addr[9 : 0] = SW[15 : 6];
+  assign ram_display_addr[ADDR_BITS-3 : 0] = SW[ADDR_BITS + 3 : 6];
 
   Divider #(N) convert_divider_0(clk, clk_0);
   Divider #(N/2) convert_divider_1(clk, clk_1);

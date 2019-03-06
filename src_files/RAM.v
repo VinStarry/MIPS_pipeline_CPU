@@ -20,25 +20,25 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module RAM(clk,rst,ram_rw,ram_sel,ram_addr,ram_data_in,ram_data_out,ram_display_addr,ram_display_data_out);
+module RAM#(parameter ADDR_BITS=12)(clk,rst,ram_rw,ram_sel,ram_addr,ram_data_in,ram_data_out,ram_display_addr,ram_display_data_out);
     input clk,rst,ram_rw;
     input [3:0]ram_sel;
-    input [9:0]ram_addr;
+    input [ADDR_BITS-3:0]ram_addr;
     input [31:0]ram_data_in;
     output reg [31:0]ram_data_out;
-    input [9:0]ram_display_addr;
+    input [ADDR_BITS-3:0]ram_display_addr;
     output reg [31:0]ram_display_data_out;
     
     integer i;
-    reg [31:0]data[(1<<10)-1:0];
+    reg [31:0]data[(1<<(ADDR_BITS-2))-1:0];
     
     initial
     begin
-        ram_data_out=0;
-        ram_display_data_out=0;
-        for (i=0;i<(1<<12-1);i=i+1)
+        ram_data_out<=0;
+        ram_display_data_out<=0;
+        for (i=0;i<(1<<(ADDR_BITS-2));i=i+1)
         begin
-            data[i]=0;
+            data[i]<=0;
         end
     end
     
@@ -46,7 +46,7 @@ module RAM(clk,rst,ram_rw,ram_sel,ram_addr,ram_data_in,ram_data_out,ram_display_
     begin
         if (rst)
         begin
-            for (i=0;i<(1<<12-1);i=i+1)
+            for (i=0;i<((1<<ADDR_BITS-2)-1);i=i+1)
             begin
                 data[i]<=0;
             end

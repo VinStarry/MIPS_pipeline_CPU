@@ -46,14 +46,14 @@ led_cpu_enable
 
  //my_B_signal :bgez
 
-module CPU(clk, rst, go, rom_data_out, ram_data_out, rom_addr, ram_addr,
-			ram_data_in, ram_sel, ram_rw, total_cycles, uncondi_branch_num, condi_branch_num, led_data_in, led_cpu_enable);
+module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, rom_addr, ram_addr,
+            ram_data_in, ram_sel, ram_rw, total_cycles, uncondi_branch_num, condi_branch_num, led_data_in, led_cpu_enable);
 
 	input clk, rst, go;
 	input [31:0]rom_data_out;
 	input [31:0]ram_data_out;
 	output [9:0]rom_addr;
-	output [9:0]ram_addr;
+	output [ADDR_BITS-3:0]ram_addr;
 	output [31:0]ram_data_in;
 	output [31:0]total_cycles;
 	output [31:0]condi_branch_num;
@@ -153,7 +153,7 @@ module CPU(clk, rst, go, rom_data_out, ram_data_out, rom_addr, ram_addr,
     
     assign ram_rw = mem_write;
     assign ram_data_in = reg2_data;
-    assign ram_addr = alu_result1[11:2];
+    assign ram_addr = alu_result1[ADDR_BITS-1:2];
     assign ram_sel= my_A_signal==0?4'b1111:
                     my_A_signal==1?(alu_result1[1]?4'b1100:4'b0011):
                     my_A_signal==2?(1<<alu_result1[1:0]):4'b0000;
