@@ -26,7 +26,7 @@ module Counter(clk, rst, counter_enable, counter_data_out);
 	output reg[DATA_BITS-1:0] counter_data_out=0;
 
 
-	always @(posedge clk) 
+	always @(posedge clk or posedge rst) 
 		begin
 			if(rst)
 				counter_data_out <= 0;

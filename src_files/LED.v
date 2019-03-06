@@ -47,8 +47,8 @@ module LED(
     Bcd b3(condi_branch_num,condi_branch_num_bcd);  //有条件分支数bcd模块
     always@(posedge clk_p)
         begin
-        cnt = cnt + 1;
-        if(cnt == 8) cnt = 0;
+        cnt <= cnt + 1;
+        if(cnt == 8) cnt <= 0;
 
         
         case(display_op)
@@ -71,7 +71,7 @@ module LED(
      
     always@(cnt) //根据不同的数码管显示位置来确定seg的值
     begin
-                    case (cnt)
+                    case (cnt[2:0])
                     
                     3'h0: seg_cnt <= data[3:0]; 
                     
@@ -138,7 +138,7 @@ module LED(
     always @(cnt) //数码管选择
     begin
                 
-                case (cnt)
+                case (cnt[2:0])
                 
                 3'h0: AN <= 8'b11111110; //显示第0～7个数码管
                 

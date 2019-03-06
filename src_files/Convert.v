@@ -8,7 +8,7 @@ module Convert(clk, SW, clk_N, go, rst, ram_display_addr, display_op);
   output [9:0] ram_display_addr;		//ram地址
   output [2:0] display_op;				//显示内容控制信号
   
-  parameter  N = 10;		//分频频率
+  parameter  N = 100_000_000;		//分频频率
   reg [1:0] i = 2'b00;
   wire clk_0, clk_1, clk_2, clk_3;
 
@@ -20,7 +20,7 @@ module Convert(clk, SW, clk_N, go, rst, ram_display_addr, display_op);
 
   always @(posedge SW[2])
   begin
-    i = (i + 1) % 4;
+    i <= i+1;
   end
   
   always @(*)
@@ -40,7 +40,7 @@ module Convert(clk, SW, clk_N, go, rst, ram_display_addr, display_op);
   Divider #(N) convert_divider_0(clk, clk_0);
   Divider #(N/2) convert_divider_1(clk, clk_1);
   Divider #(N/4) convert_divider_2(clk, clk_2);
-  Divider #(N/8) convert_divider_3(clk, clk_3);
+  Divider #(N/16) convert_divider_3(clk, clk_3);
  endmodule
 
 /*

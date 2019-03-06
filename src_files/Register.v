@@ -8,7 +8,7 @@ module Register #(parameter DATA_BITS = 32)(clk, rst, reg_enable, reg_data_in, r
   output reg [DATA_BITS - 1: 0] reg_data_out = 0;	//读出数据
   reg [DATA_BITS - 1: 0] reg_data = 0;				    //寄存器值
 
-  always @(posedge clk)
+  always @(posedge clk or posedge rst)
   begin
   	if (rst == 1)
   	begin

@@ -42,7 +42,7 @@ module RAM(clk,rst,ram_rw,ram_sel,ram_addr,ram_data_in,ram_data_out,ram_display_
         end
     end
     
-    always@(posedge clk)
+    always@(posedge clk or posedge rst)
     begin
         if (rst)
         begin
