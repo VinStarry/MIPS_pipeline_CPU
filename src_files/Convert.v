@@ -8,7 +8,7 @@ module Convert(clk, SW, clk_N, go, rst, ram_display_addr, display_op);
   output [9:0] ram_display_addr;		//ram地址
   output [2:0] display_op;				//显示内容控制信号
   
-  parameter  N = 100_000_000;		//分频频率
+  parameter  N = 10_000_000;		//分频频率
   reg [1:0] i = 2'b00;
   wire clk_0, clk_1, clk_2, clk_3;
 
