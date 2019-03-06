@@ -63,7 +63,7 @@ case(alu_op[3:0])
  	4'b0011:
  	/* alu_op == 3, unsigned multiply, tested */
 	begin
-		{alu_result1, alu_result2} <= alu_a_data * alu_b_data;
+		{alu_result2, alu_result1} <= alu_a_data * alu_b_data;
 	end 
 	4'b0100:
  	/* alu_op == 4, unsigned dividison, tested */
