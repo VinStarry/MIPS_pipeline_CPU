@@ -7,3 +7,12 @@ SW[2]: 改变频率。上升沿时，频率=频率/2，有四种频率：1HZ, 0.
 SW[5:3]: display_op[2:0]，显示内容控制    
 SW[15:6]: ram_display_addr[15:6]，显示信息的ram地址    
 
+# xyx's 28 instrs
+add 4 CCMB instructions based on the task.  
+4 instructions are  
+SLRV----> shift logical right variable  
+XOR ----> exclusive or  
+LBU ----> load byte unsigned  
+BLEZ----> branch on less or equal than  
+Already tested on FPGA.
+
