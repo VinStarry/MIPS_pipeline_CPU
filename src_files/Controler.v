@@ -103,8 +103,8 @@ module Controler(
 	assign shamt_sel = C2_SRLV ? 1 : 0;
 	assign sp_branch = B1_BLEZ;
 	
-	assign ram_sel_input = M3_LBU ? 2'b11 : 2'b00;	
-    /* reserved for change, ramsel = 2'b00 --> 32-bit rw, 2'b01 --> 16-bit rw, 2'b11 --> 8-bit rw*/
+	assign ram_sel_input = M3_LBU ? 2'b10 : 2'b00;	
+    /* reserved for change, ramsel = 2'b00 --> 32-bit rw, 2'b01 --> 16-bit rw, 2'b10 --> 8-bit rw*/
 
 	assign S3 = OR | NOR | SLT | SLTU | SLTI | ORI | C5_XOR | B1_BLEZ;
 	assign S2 = ADD | ADDU | SUB | AND | SLTU | ADDI | ANDI | ADDIU | LW | SW | M3_LBU;

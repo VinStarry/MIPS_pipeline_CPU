@@ -44,9 +44,13 @@ module RAM#(parameter ADDR_BITS=12)(clk,rst,ram_rw,ram_sel,ram_addr,ram_data_in,
     
     assign rst_mask={32{~ram_rw}}&{32{~rst}};
     assign ram_rw_mask={32{~ram_rw}};
-    assign ram_sel_mask={{8{ram_sel[3]}},{8{ram_sel[2]}},{8{ram_sel[1]}},{8{ram_sel[0]}}};
+    assign ram_sel_mask = {{8{ram_sel[3]}},{8{ram_sel[2]}},{8{ram_sel[1]}},{8{ram_sel[0]}}};
     
-    assign ram_data_out=data[ram_addr]&rst_mask&ram_rw_mask&ram_sel_mask;
+    assign ram_data_out = (ram_sel == 4'b1111) ? (data[ram_addr]&rst_mask&ram_rw_mask&ram_sel_mask) : 
+                          (ram_sel == 4'b0001) ? (data[ram_addr]&rst_mask&ram_rw_mask&ram_sel_mask) :
+                          (ram_sel == 4'b0010) ? (data[ram_addr]&rst_mask&ram_rw_mask&ram_sel_mask) >> 8 :
+                          (ram_sel == 4'b0100) ? (data[ram_addr]&rst_mask&ram_rw_mask&ram_sel_mask) >> 16:
+                                                 (data[ram_addr]&rst_mask&ram_rw_mask&ram_sel_mask) >> 24;
     
     assign ram_display_data_out=data[ram_display_addr];
     
