@@ -19,6 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+/*
 module RAM#(parameter ADDR_BITS=12)(clk,rst,ram_rw,ram_sel,ram_addr,ram_data_in,ram_data_out,ram_display_addr,ram_display_data_out);
     input clk,rst,ram_rw;
     input [3:0]ram_sel;
@@ -73,11 +74,10 @@ module RAM#(parameter ADDR_BITS=12)(clk,rst,ram_rw,ram_sel,ram_addr,ram_data_in,
     end
     
 endmodule
+*/
 
-
-/*
-module RAM#(parameter ADDR_BITS=12)(clk,rst,ram_rw,ram_sel,ram_addr,ram_data_in,ram_data_out,ram_display_addr,ram_display_data_out);
-    input clk,rst,ram_rw;
+module RAM#(parameter ADDR_BITS=12)(clk,rst,ram_rw,ram_sel,ram_type,ram_addr,ram_data_in,ram_data_out,ram_display_addr,ram_display_data_out);
+    input clk,rst,ram_rw,ram_type;
     input [3:0]ram_sel;
     input [ADDR_BITS-3:0]ram_addr;
     input [31:0]ram_data_in;
@@ -120,12 +120,12 @@ module RAM#(parameter ADDR_BITS=12)(clk,rst,ram_rw,ram_sel,ram_addr,ram_data_in,
             begin
                 case(ram_sel[3:0])
                     4'b0000:ram_data_out<=0;
-                    4'b0001:ram_data_out<={24'b0,data[ram_addr][7:0]};
-                    4'b0010:ram_data_out<={24'b0,data[ram_addr][15:8]};
-                    4'b0100:ram_data_out<={24'b0,data[ram_addr][23:16]};
-                    4'b1000:ram_data_out<={24'b0,data[ram_addr][31:24]};
-                    4'b0011:ram_data_out<={16'b0,data[ram_addr][15:0]};
-                    4'b1100:ram_data_out<={16'b0,data[ram_addr][31:16]};
+                    4'b0001:ram_data_out<={{24{ram_type&data[ram_addr][7]}},data[ram_addr][7:0]};
+                    4'b0010:ram_data_out<={{24{ram_type&data[ram_addr][15]}},data[ram_addr][15:8]};
+                    4'b0100:ram_data_out<={{24{ram_type&data[ram_addr][23]}},data[ram_addr][23:16]};
+                    4'b1000:ram_data_out<={{24{ram_type&data[ram_addr][31]}},data[ram_addr][31:24]};
+                    4'b0011:ram_data_out<={{16{ram_type&data[ram_addr][15]}},data[ram_addr][15:0]};
+                    4'b1100:ram_data_out<={{16{ram_type&data[ram_addr][31]}},data[ram_addr][31:16]};
                     4'b1111:ram_data_out<=data[ram_addr];
                     default:ram_data_out<=0;
                 endcase
@@ -136,4 +136,4 @@ module RAM#(parameter ADDR_BITS=12)(clk,rst,ram_rw,ram_sel,ram_addr,ram_data_in,
     
 endmodule
 
-*/
+

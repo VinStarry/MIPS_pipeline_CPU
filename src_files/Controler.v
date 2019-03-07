@@ -37,15 +37,14 @@ module Controler(
 	output jr,
 	output [1:0]my_A_signal,
 	output syscall,
-	output my_B_signal
+	output bltz,
+	output ram_type
+	
     );
     
-	assign my_B_signal = 0;	// reserved for change
-	assign my_A_signal = 2'b00;	
-	/* reserved for change, ramsel = 2'b00 --> 32-bit rw, 2'b01 --> 16-bit rw, 2'b11 --> 8-bit rw*/
-
+    wire XORI,SLTIU,LH,BLTZ;
     wire SLL, SRA, SRL, ADD, ADDU, SUB, AND, OR, NOR, SLT, SLTU, JR, SYSCALL;
-	wire J, JAL, BEQ, BNE, ADDI, ADDIU, SLTI, ANDI, ORI, LW, SRAV, SLTIU, SW;
+	wire J, JAL, BEQ, BNE, ADDI, ADDIU, SLTI, ANDI, ORI, LW, SRAV, SW;
 	wire S3, S2, S1, S0;
 
 /* R-type */
@@ -77,26 +76,37 @@ module Controler(
 	assign ORI = (op == 6'd13);
 	assign LW = (op == 6'd35);
 	assign SW = (op == 6'd43);
+    assign XORI = (op == 6'd14);
+    assign SLTIU = (op == 6'd11);
+    assign LH = (op == 6'd33);
+    assign BLTZ = (op == 6'd1);
 
 /* Control points (output) */
-	assign mem_to_reg = LW;
+	assign mem_to_reg = LW | LH;
 	assign mem_write = SW;
 
-	assign alu_src_b = ADDI | ANDI | ADDIU | SLTI | ORI | LW | SW;
-	assign reg_write = SLL | SRA | SRL | ADD | ADDU | SUB | AND | OR | NOR | SLT | SLTU | JAL | ADDI | ANDI | ADDIU | SLTI | ORI | LW;
+	assign alu_src_b = ADDI | ANDI | ADDIU | SLTI | ORI | LW | SW | LH | XORI | SLTIU | LH;
+	assign reg_write = SLL | SRA | SRL | ADD | ADDU | SUB | AND | OR | NOR | SLT | SLTU | JAL | ADDI | ANDI | ADDIU | SLTI | ORI | LW | XORI | SLTIU | LH | BLTZ;
 	assign syscall = SYSCALL;
-	assign signed_ext = BEQ | BNE | ADDI | SLTI | LW | SW;
+	assign signed_ext = BEQ | BNE | ADDI | SLTI | LW | SW | SLTIU | LH | BLTZ;
 	assign reg_dst = SLL | SRA | SRL | ADD | ADDU | SUB | AND | OR | NOR | SLT | SLTU ;
 	assign beq = BEQ;
 	assign bne = BNE;
 	assign jr = JR;
 	assign jmp = J;
 	assign jal = JAL;
+	
+	assign bltz = BLTZ;	// reserved for change
+	
 
-	assign S3 = OR | NOR | SLT | SLTU | SLTI | ORI;
-	assign S2 = ADD | ADDU | SUB | AND | SLTU | ADDI | ANDI | ADDIU | LW | SW;
-	assign S1 = SRL | SUB | AND | NOR | SLT | ANDI | SLTI;
-	assign S0 = SRA | ADD | ADDU | AND | SLT | ADDI | ANDI | ADDIU | SLTI | LW | SW;
+	assign S3 = OR | NOR | SLT | SLTU | SLTI | ORI | XORI | SLTIU | BLTZ;
+	assign S2 = ADD | ADDU | SUB | AND | SLTU | ADDI | ANDI | ADDIU | LW | SW | SLTIU | LH;
+	assign S1 = SRL | SUB | AND | NOR | SLT | ANDI | SLTI | BLTZ;
+	assign S0 = SRA | ADD | ADDU | AND | SLT | ADDI | ANDI | ADDIU | SLTI | LW | SW | XORI | BLTZ | LH ;
 	assign alu_op = {S3,S2,S1,S0};
+	
+	assign my_A_signal = LH?2'b01:2'b00;	
+	assign ram_type = LH?1'b1:1'b0;
+	
     
 endmodule
