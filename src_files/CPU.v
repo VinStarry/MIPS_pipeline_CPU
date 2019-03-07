@@ -182,8 +182,8 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
 
     //pc_enable   
     assign halt = ((reg1_data != 34) & syscall);
-    assign led_cpu_enable = 1;//((reg1_data == 34) & syscall);
-    assign led_data_in = rom_data_out;//reg2_data;
+    assign led_cpu_enable = ((reg1_data == 34) & syscall);//((reg1_data == 34) & syscall);
+    assign led_data_in = reg2_data;//reg2_data;
     assign pc_enable = go & (!halt);
 
 
