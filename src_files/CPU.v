@@ -137,7 +137,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
    	Mux1_2 #(5)reg2_no_mux(.mux_select(syscall), .mux_data_in_0(rt), .mux_data_in_1(5'b00100), .mux_data_out(reg2_no));
    	Mux1_2 #(5)reg_no_in_mux_1(.mux_select(reg_dst), .mux_data_in_0(rt), .mux_data_in_1(rd), .mux_data_out(reg_no_in_mid));
    	Mux1_2 #(5)reg_no_in_mux_2(.mux_select(jal), .mux_data_in_0(reg_no_in_mid), .mux_data_in_1(5'b11111), .mux_data_out(reg_no_in));
-   	Mux1_2 #(32)alu_srcb_mux(.mux_select(alu_src_b), .mux_data_in_0(reg2_data), .mux_data_in_1(imm_signed_extend), .mux_data_out(alu_srcb_data));
+   	Mux1_2 #(32)alu_srcb_mux(.mux_select(alu_src_b), .mux_data_in_0(reg2_data), .mux_data_in_1(imm_extend), .mux_data_out(alu_srcb_data));
     
     assign alu_a_data = reg1_data;
     assign alu_b_data = alu_srcb_data;
