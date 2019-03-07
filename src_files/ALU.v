@@ -24,7 +24,7 @@ module ALU(
 	input[31:0] alu_a_data,
 	input[31:0] alu_b_data,
 	input[3:0] alu_op,
-	input[4:0] alu_shmat,
+	input[4:0] alu_shamt,
 	output alu_equal,
 	output reg[31:0] alu_result1,
 	output reg[31:0] alu_result2
@@ -32,25 +32,25 @@ module ALU(
 
 assign alu_equal = ((alu_a_data == alu_b_data) ? 1 :0);
 
-always @(alu_a_data or alu_b_data or alu_op or alu_shmat)
+always @(alu_a_data or alu_b_data or alu_op or alu_shamt)
 begin
 case(alu_op[3:0])
 	4'b0000: 
 	/* alu_op == 0, logical shift left, tested */
 	begin
-		alu_result1 = alu_b_data << alu_shmat;
+		alu_result1 = alu_b_data << alu_shamt;
 		alu_result2 = 0;
 	end
  	4'b0001: 
  	/* alu_op == 1, arithmetic shift right, tested */
  	begin
- 		alu_result1 = (($signed(alu_b_data)) >>> alu_shmat);
+ 		alu_result1 = (($signed(alu_b_data)) >>> alu_shamt);
  		alu_result2 = 0;
  	end
  	4'b0010:
  	/* alu_op == 2, logical shift right, tested */
 	begin
-		alu_result1 = alu_b_data >> alu_shmat;
+		alu_result1 = alu_b_data >> alu_shamt;
 		alu_result2 = 0;
 	end 
  	4'b0011:

@@ -43,9 +43,6 @@ led_cpu_enable
 
  //attention: ram_addr [11:0]
 
-
- //my_B_signal :bgez
-
 module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, rom_addr, ram_addr,
             ram_data_in, ram_sel, ram_rw, total_cycles, uncondi_branch_num, condi_branch_num, led_data_in, led_cpu_enable);
 
@@ -86,9 +83,10 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
 
     /*Controler*/
     wire beq, bne, mem_to_reg, mem_write, alu_src_b, reg_write, reg_dst, signed_ext, jal, jmp, jr, syscall;
-    wire my_B_signal; //my signal
+    wire shamt_sel;
     wire[3:0] alu_op;
-    wire[1:0] my_A_signal;
+    wire[1:0] ram_sel_input;
+    wire sp_branch;
     
     /*RegFile*/
     wire[4:0] reg1_no, reg2_no, reg_no_in;
@@ -118,11 +116,11 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     wire con_if, uncon_if;
 
     /*Controler*/
-    Controler controler(.op(op), .func(func),
+    Controler controler(.op(op), .func(func), .rt(rt),
                         .beq(beq), .bne(bne), .mem_to_reg(mem_to_reg), .mem_write(mem_write),
                         .alu_op(alu_op), .alu_src_b(alu_src_b), .reg_write(reg_write), .reg_dst(reg_dst),
                         .signed_ext(signed_ext), .jal(jal), .jmp(jmp), .jr(jr),
-                        .my_A_signal(my_A_signal), .syscall(syscall), .my_B_signal(my_B_signal));
+                        .ram_sel_input(ram_sel_input), .syscall(syscall), .shamt_sel(shamt_sel), .sp_branch(sp_branch));
     
 
     /*Extender*/   
@@ -141,22 +139,22 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
    	Mux1_2 #(5)reg_no_in_mux_2(.mux_select(jal), .mux_data_in_0(reg_no_in_mid), .mux_data_in_1(5'b11111), .mux_data_out(reg_no_in));
    	Mux1_2 #(32)alu_srcb_mux(.mux_select(alu_src_b), .mux_data_in_0(reg2_data), .mux_data_in_1(imm_signed_extend), .mux_data_out(alu_srcb_data));
     
-    //bgez
-   	//Mux1_2 #(32) alu_bgez_mux(.mux_select(bgez), .mux_data_in_0(alu_srcb_data), .mux_data_in_1(0), .mux_data_out(alu_b_data));
     assign alu_a_data = reg1_data;
     assign alu_b_data = alu_srcb_data;
     
-        
+    wire[4:0] shamt_final_input;
+    assign shamt_final_input = shamt_sel ? reg1_data[4:0] : shamt[4:0];
+    
     /*ALU*/
-    ALU alu(.alu_a_data(alu_a_data), .alu_b_data(alu_b_data), .alu_op(alu_op), .alu_shmat(shamt),
+    ALU alu(.alu_a_data(alu_a_data), .alu_b_data(alu_b_data), .alu_op(alu_op), .alu_shamt(shamt_final_input),
     		.alu_equal(alu_equal), .alu_result1(alu_result1), .alu_result2(alu_result2));
     
     assign ram_rw = mem_write;
     assign ram_data_in = reg2_data;
     assign ram_addr = alu_result1[ADDR_BITS-1:2];
-    assign ram_sel= my_A_signal==0?4'b1111:
-                    my_A_signal==1?(alu_result1[1]?4'b1100:4'b0011):
-                    my_A_signal==2?(1<<alu_result1[1:0]):4'b0000;
+    assign ram_sel= ram_sel_input == 0 ? 4'b1111:
+                    ram_sel_input == 1 ? (alu_result1[1]?4'b1100:4'b0011):
+                    ram_sel_input == 2 ? (1<<alu_result1[1:0]):4'b0000;
 
     
 
@@ -179,18 +177,16 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     Mux1_2 #(32) din_jal_mux(.mux_select(jal), .mux_data_in_0(to_reg_data), .mux_data_in_1(next_pc), .mux_data_out(din_jal));
     assign reg_data_in = din_jal;
 
-
     //pc_enable   
     assign halt = ((reg1_data != 34) & syscall);
     assign led_cpu_enable = ((reg1_data == 34) & syscall);//((reg1_data == 34) & syscall);
-    assign led_data_in = reg2_data;//reg2_data;
-    assign pc_enable = go & (!halt);
+    assign led_data_in = reg2_data;//reg2_data
+    assign pc_enable = go | (!halt);
 
 
     /*counter*/  
     assign uncon_if = jal | jmp | jr;
-    //bgez: assign con_if = (bgez & (!alu_result1)) | (bne & (!alu_equal)) | (beq & alu_equal);
-    assign con_if = (bne & (!alu_equal)) | (beq & alu_equal);
+    assign con_if = (bne & (!alu_equal)) | (beq & alu_equal) | (sp_branch & (alu_result1[0] | alu_equal));
 
     Counter #(32) total_cycles_counter(.clk(clk), .rst(rst), .counter_enable(pc_enable), .counter_data_out(total_cycles));
     Counter #(32) condi_branch_num_counter(.clk(clk), .rst(rst), .counter_enable(con_if), .counter_data_out(condi_branch_num));
