@@ -1,4 +1,4 @@
-# MIPS_pipline_CPU
+# MIPS_pipeline_CPU
 Design and synthesis of a MIPS pipeline CPU....
 
 SW[0]: 暂停、运行。=1, 运行；=0，暂停。     
