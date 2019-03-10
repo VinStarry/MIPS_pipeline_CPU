@@ -73,6 +73,6 @@ module IF_ID(
 			// pre_jmp_out <= 0;
 			// hit_out <= 0;
 			end
-	end
+		end
 	   
 endmodule
