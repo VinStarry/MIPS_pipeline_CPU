@@ -31,7 +31,7 @@ module MEM_WB(
     input Syscall_in,       //Syscall控制信号传递
     input JAL_in,           //JAL控制信号传递
     input RegWrite_in,      //RegWrite控制信号传递
-    input WriteBack_in,      //WriteBack控制信号传递
+    input [31:0]WriteBack_in,      //WriteBack控制信号传递
     input [31:0]R1_in,              //R1数据传输
     input [31:0]R2_in,              //R2数据传输
     input [4:0]Rd_no_in,            //Rd写回寄存器编号传输
@@ -42,7 +42,7 @@ module MEM_WB(
     output reg Syscall_out,
     output reg JAL_out,
     output reg RegWrite_out,
-    output reg WriteBack_out,
+    output reg [31:0]WriteBack_out,
     output reg [31:0]R1_out,
     output reg [31:0]R2_out,
     output reg [4:0]Rd_no_out
