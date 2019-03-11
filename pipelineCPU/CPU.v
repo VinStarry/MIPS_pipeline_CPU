@@ -120,7 +120,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     Extender #(16,32,0)unsignedExt(Imm,unsignedImm);
     Extender #(16,32,1)signedExt(Imm,signedImm);
     
-    Mux1_2 #(32)(SignedExt,unsignedImm,signedImm,ID_Imm);
+    Mux1_2 #(32)selExt(SignedExt,unsignedImm,signedImm,ID_Imm);
     
     
     assign LoadUse=EX.MemToReg&(R1_EX_Related|R2_EX_Related);
@@ -139,7 +139,32 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
 
     
     /*WB:Write back stage*/
+    wire WB_Syscall,WB_JAL,WB_RegWrite;
+    wire [31:0]WB_R1_Data,WB_R2_Data,MEM_Redirect;
+    
+    Mux1_2 #(32)selWBData(WB_JAL,MEM_Redirect,WB_IR,WB_RD_Data);
 
+    /*HALT & LED*/
+    assign HALT=(~(WB_R1_Data==22))&(WB_Syscall);
+    assign led_cpu_enable=(WB_R1_Data==22)&WB_Syscall;
+    
+    Register #(32)ledData(clk, rst, led_cpu_enable, WB_R2_Data, led_data_in);
+
+    /*Count*/
+    wire bubbleEnable;
+    wire conifEnable;
+    wire unconifEanble;
+    wire totalEnable;
+    
+    assign bubbleEnable=LoadUse&(~HALT);
+    assign conifEnable=con_if;
+    assign unconifEanble=uncon_if;
+    assign totalEnable=go|(~HALT);
+    
+    Counter totalCyclesNum(clk, rst, bubbleEnable, total_cycles);
+    Counter bubbleNum(clk, rst, bubbleEnable, bubble_num);
+    Counter condiBranchNum(clk, rst, bubbleEnable, condi_branch_num);
+    Counter uncondiBranchNum(clk, rst, bubbleEnable, uncondi_branch_num);
 
     /*Pipeline*/
     IF_ID if_id(clk,Enable1,Rst1,IF_Effective,IF_PC,IF_IR,ID_Effective,ID_PC,ID_IR);
