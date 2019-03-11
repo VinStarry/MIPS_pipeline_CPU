@@ -22,7 +22,7 @@ reg_write, reg_data_in, reg1_data, reg2_data);
   end
 
 
-  always @(posedge clk)       //写使能，上升沿，非0号寄存器
+  always @(negedge clk)       //写使能，上升沿，非0号寄存器
   begin
     if (reg_write == 1 && reg_no_in != 0)
     begin

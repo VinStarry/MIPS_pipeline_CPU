@@ -42,7 +42,7 @@ module RAM#(parameter ADDR_BITS=12)(clk,rst,ram_rw, ram_extend_type,ram_sel,ram_
         end
     end
     
-    always@(negedge clk or posedge rst)
+    always@(posedge clk or posedge rst)
     begin
         if (rst)
         begin
