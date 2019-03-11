@@ -22,7 +22,6 @@
 
 module LED(
     input clk,                          //系统时钟周期
-    input led_cpu_enable,               //syscall 34信号，高电平有效
     input [2:0] display_op,             //显示内容控制信号
     input [31:0] led_data_in,           //程序显示内容
     input [31:0] total_cycles,          //总周期数

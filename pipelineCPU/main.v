@@ -29,7 +29,7 @@ module main#(parameter ADDR_BITS = 12)(clk,SW,SEG,AN);
     
     wire clk_N;
     wire go,rst;
-    wire ram_rw,ram_extend_type,led_cpu_enable;
+    wire ram_rw,ram_extend_type;
     wire [2:0]display_op;
     wire [3:0]ram_sel;
     wire [9:0]rom_addr;
@@ -55,7 +55,7 @@ module main#(parameter ADDR_BITS = 12)(clk,SW,SEG,AN);
                         .rom_data_out(rom_data_out), .ram_data_out(ram_data_out), .rom_addr(rom_addr), 
                         .ram_addr(ram_addr),.ram_data_in(ram_data_in), .ram_sel(ram_sel), .ram_rw(ram_rw), .ram_extend_type(ram_extend_type),
 			            .total_cycles(total_cycles), .uncondi_branch_num(uncondi_branch_num), .condi_branch_num(condi_branch_num), 
-			            .bubble_num(bubble_num),.led_cpu_enable(led_cpu_enable),.led_data_in(led_data_in));
+			            .bubble_num(bubble_num),.led_data_in(led_data_in));
 
     ROM rom(.rom_addr(rom_addr),.rom_data_out(rom_data_out));
     
@@ -65,7 +65,7 @@ module main#(parameter ADDR_BITS = 12)(clk,SW,SEG,AN);
                         .ram_data_out(ram_data_out),.ram_display_addr(ram_display_addr),.ram_display_data_out(ram_display_data_out));
   
     
-    LED led(.clk(clk),.led_cpu_enable(led_cpu_enable),.display_op(display_op),
+    LED led(.clk(clk),.display_op(display_op),
             .led_data_in(led_data_in),.total_cycles(total_cycles),.uncondi_branch_num(uncondi_branch_num),
             .condi_branch_num(condi_branch_num),.bubble_num(bubble_num),.ram_display_data_out(ram_display_data_out),
             .SEG(SEG),.AN(AN));

@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, rom_addr, ram_addr,
-            ram_data_in, ram_sel, ram_rw, ram_extend_type, total_cycles, uncondi_branch_num, condi_branch_num, bubble_num, led_data_in, led_cpu_enable);
+            ram_data_in, ram_sel, ram_rw, ram_extend_type, total_cycles, uncondi_branch_num, condi_branch_num, bubble_num, led_data_in);
 	input clk, rst, go;
 	input [31:0]rom_data_out;
 	input [31:0]ram_data_out;
@@ -33,7 +33,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     output [31:0]bubble_num;
 	output [31:0]led_data_in;
 	output [3:0]ram_sel; 
-	output ram_rw, ram_extend_type ,led_cpu_enable;
+	output ram_rw, ram_extend_type;
 
     /*wire*/
     wire JR;
@@ -208,6 +208,8 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     Mux1_2 #(32)selWBData(WB_JAL,MEM_Redirect,WB_PC,WB_RD_Data);
 
     /*HALT & LED*/
+    wire led_cpu_enable;
+    
     assign HALT=(~(WB_R1_Data==34))&(WB_Syscall);
     assign led_cpu_enable=(WB_R1_Data==34)&WB_Syscall;
     
