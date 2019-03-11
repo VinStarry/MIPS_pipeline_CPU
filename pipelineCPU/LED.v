@@ -41,11 +41,12 @@ module LED(
     wire [31:0] total_cycles_bcd;   //总周期数的bcd码
     wire [31:0] uncondi_branch_num_bcd; //无条件周期数的bcd码
     wire [31:0] condi_branch_num_bcd;   //有条件分支数的bcd码
-    
+    wire [31:0] bubble_num_bcd;   //气泡数的bcd码
     Divider #(100_000) d1(clk,clk_p); //分频为1000hz
     Bcd b1(total_cycles,total_cycles_bcd);  //总周期数bcd模块
     Bcd b2(uncondi_branch_num,uncondi_branch_num_bcd);  //无条件周期数bcd模块
     Bcd b3(condi_branch_num,condi_branch_num_bcd);  //有条件分支数bcd模块
+    Bcd b4(bubble_num,bubble_num_bcd);  //气泡数bcd模块
     always@(posedge clk_p)
         begin
         cnt <= cnt + 1;
@@ -61,11 +62,13 @@ module LED(
                 3'b001: data <= total_cycles_bcd;
                 
                 3'b011: data <= uncondi_branch_num_bcd;
- 
+                
+                3'b101:data <= bubble_num_bcd;
+            
                 3'b111: data <= condi_branch_num_bcd;
 
                 3'b010: data <= ram_display_data_out;
-                
+               
                 default:data <= 0;
                 endcase
         end
