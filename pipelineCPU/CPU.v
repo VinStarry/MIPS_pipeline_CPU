@@ -76,7 +76,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     wire [25:0]ID_J_Addr;
     
     wire R1_Used,R2_Used;
-    wire EX_RegWrite,MEM_RegWrite;
+    wire EX_RegWrite,MEM_RegWrite,WB_RegWrite;
     wire [4:0]EX_WriteReg,MEM_WriteReg;
     wire R1_EX_Related,R2_EX_Related,R1_MEM_Related,R2_MEM_Related;
     wire EX_MemToReg;
@@ -115,7 +115,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     Mux1_2 #(5)selRD(RegDst,RT,RD,Dst_no);
     Mux1_2 #(5)selID_RD(ID_JAL,Dst_no,5'b11111,ID_RD_no);
     
-    RegFile regfile(clk,R1_no, R2_no, WB_RD_no,ID_RegWrite,WB_RD_Data,ID_R1_Data,ID_R2_Data);
+    RegFile regfile(clk,R1_no, R2_no, WB_RD_no,WB_RegWrite,WB_RD_Data,ID_R1_Data,ID_R2_Data);
     
     Extender #(16,32,0)unsignedExt(Imm,unsignedImm);
     Extender #(16,32,1)signedExt(Imm,signedImm);
@@ -202,10 +202,10 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
 
     
     /*WB:Write back stage*/
-    wire WB_Syscall,WB_JAL,WB_RegWrite;
+    wire WB_Syscall,WB_JAL;
     wire [31:0]WB_R1_Data,WB_R2_Data;
     
-    Mux1_2 #(32)selWBData(WB_JAL,MEM_Redirect,WB_IR,WB_RD_Data);
+    Mux1_2 #(32)selWBData(WB_JAL,MEM_Redirect,WB_PC,WB_RD_Data);
 
     /*HALT & LED*/
     assign HALT=(~(WB_R1_Data==34))&(WB_Syscall);

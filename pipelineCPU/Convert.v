@@ -1,5 +1,6 @@
 `timescale 1ns / 1ps
-module Convert#(parameter ADDR_BITS=12, parameter  N = 10)(clk, SW, clk_N, go, rst, ram_display_addr, display_op);
+module Convert#(parameter ADDR_BITS=12, parameter  N = 10_000_000)(clk, SW, clk_N, go, rst, ram_display_addr, display_op);
+
   input clk;				//时钟信号输入
   input [15:0] SW;			//按键输入
   output reg clk_N = 0;				//分频后的时钟
