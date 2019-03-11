@@ -59,10 +59,10 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     
     Register #(32)PC(clk, rst, pc_enable, right_pc, cur_pc);
     
-    assign rom_data_out = cur_pc[11:2];
+    assign rom_addr=cur_pc[11:2];
     assign next_pc = cur_pc+4;
     assign Rst1=rst|con_if|uncon_if;
-    assign Enable1=HALT|LoadUse;
+    assign Enable1=LoadUse|((~go)&HALT);
     assign IF_Effective=1'b1;
     assign IF_PC=next_pc;
     assign IF_IR=rom_data_out;
@@ -79,7 +79,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     wire EX_RegWrite,MEM_RegWrite;
     wire [4:0]EX_WriteReg,MEM_WriteReg;
     wire R1_EX_Related,R2_EX_Related,R1_MEM_Related,R2_MEM_Related;
-    wire EX_MemTOReg;
+    wire EX_MemToReg;
     
     //ID_My_B_Signal ID_MemAccess
     wire SignedExt,RegDst;
@@ -153,18 +153,18 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     /*Count*/
     wire bubbleEnable;
     wire conifEnable;
-    wire unconifEanble;
+    wire unconifEnable;
     wire totalEnable;
     
     assign bubbleEnable=LoadUse&(~HALT);
     assign conifEnable=con_if;
-    assign unconifEanble=uncon_if;
+    assign unconifEnable=uncon_if;
     assign totalEnable=go|(~HALT);
     
-    Counter totalCyclesNum(clk, rst, bubbleEnable, total_cycles);
+    Counter totalCyclesNum(clk, rst, totalEnable, total_cycles);
     Counter bubbleNum(clk, rst, bubbleEnable, bubble_num);
-    Counter condiBranchNum(clk, rst, bubbleEnable, condi_branch_num);
-    Counter uncondiBranchNum(clk, rst, bubbleEnable, uncondi_branch_num);
+    Counter condiBranchNum(clk, rst, conifEnable, condi_branch_num);
+    Counter uncondiBranchNum(clk, rst, unconifEnable, uncondi_branch_num);
 
     /*Pipeline*/
     IF_ID if_id(clk,Enable1,Rst1,IF_Effective,IF_PC,IF_IR,ID_Effective,ID_PC,ID_IR);
