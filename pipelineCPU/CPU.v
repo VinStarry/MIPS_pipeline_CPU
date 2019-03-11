@@ -70,13 +70,14 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     wire pc_enable;
     wire [1:0]pc_select;
     wire [31:0]next_pc,b_pc,j_pc,jr_pc,right_pc,cur_pc;
-    wire rst1,rst2,rst3,rst4;
-    wire enable1,enable2,enable3,enable4;
-    wire effective1,effective2,effective3,effective4;
-    wire [31:0]IR1,IR2,IR3,IR4;
-    wire [31:0]PC1,PC2,PC3,PC4;
-        
+    wire Rst1,Rst2,Rst3,Rst4,WB_Rst;
+    wire Enable1,Enable2,Enable3,Enable4;
+    wire IF_Effective,ID_Effective,EX_Effective,MEM_Effective;
+    wire [31:0]IF_IR,ID_IR,EX_IR,MEM_IR,WB_IR;
+    wire [31:0]IF_PC,ID_PC,EX_PC,MEM_PC,WB_PC;
     
+    
+    /*IF:Instruction decoding stage*/
     /*ID:Instruction fetch stage*/
     assign pc_select = {uncon_if,{con_if|JR}};
     assign pc_enable = (~LoadUse)&(go|(~HALT));
@@ -87,36 +88,44 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     
     assign rom_data_out = cur_pc[11:2];
     assign next_pc = cur_pc+8'h00000004;
-    assign rst1=rst|con_if|uncon_if;
-    assign enable1=HALT|LoadUse;
+    assign Rst1=rst|con_if|uncon_if;
+    assign Enable1=HALT|LoadUse;
     
     
-    IF_ID if_id(clk,enable1,rst,1'b1,effective1,effective2,rom_data_out,IR1,next_pc,PC1);
+    IF_ID if_id(clk,Enable1,Rst1,1'b1,ID_Effective,rom_data_out,IF_IR,next_pc,IF_PC);
     
     
-    /*IF:Instruction decoding stage*/
+    /*ID:Instruction fetch stage*/
     wire [5:0]OP;
     wire [5:0]Func;
     wire [4:0]RS,RT,RD,ID_Shamt,R1_no,R2_no;
     wire [15:0]Imm;
-    wire [15:0]J_Addr;
+    wire [25:0]ID_J_Addr;
+    
     wire R1_Used,R2_Used;
     wire EX_RegWrite,MEM_RegWrite;
     wire [4:0]EX_WriteReg,MEM_WriteReg;
     wire R1_EX_Related,R2_EX_Related,R1_MEM_Related,R2_MEM_Related;
     wire EX_MemTOReg;
+    
+    //ID_My_B_Signal ID_MemAccess
     wire SignedExt,RegDst;
-    wire ID_RegWrite,ID_MemToReg,ID_MemWrite,ID_JMP,ID_JR,ID_Beq,ID_Bne,ID_JAL,ID_AluSrcB,ID_Syscall;
-    wire [1:0]ID_My_A_Signal;
+    wire ID_RegWrite,ID_MemToReg,ID_MemWrite,ID_JMP,ID_JR,ID_Beq,ID_Bne,ID_My_B_Signal,ID_AluSrcB,ID_JAL,ID_Syscall;
+    wire [1:0]ID_MemAccess;
     wire [3:0]ID_AluOP;
     
-    assign OP=IR1[31:26];
-    assign Func=IR1[5:0];
-    assign RS=IR1[25:21];
-    assign RT=IR1[20:16];
-    assign RD=IR1[15:11];
-    assign Imm=IR1[15:0];
-    assign J_Addr=IR1[25:0];
+    wire [5:0]Dst_no,ID_RD_no,WB_RD_no;
+    wire [31:0]signedImm,unsignedImm,ID_Imm;
+    wire 
+    
+    assign OP=ID_IR[31:26];
+    assign Func=ID_IR[5:0];
+    assign RS=ID_IR[25:21];
+    assign RT=ID_IR[20:16];
+    assign RD=ID_IR[15:11];
+    assign Imm=ID_IR[15:0];
+    assign ID_Shamt=ID_IR[10:6];
+    assign ID_J_Addr=ID_IR[25:0];
     
     RegisterUsage usage(OP,Func,R1_Used,R2_Used);
     CorrelationDetec detec(R1_Used,R2_Used,EX_RegWrite,MEM_RegWrite,R1_no,R2_no,EX_WriteReg,MEM_WriteReg,
@@ -141,6 +150,3 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
 
 
 endmodule
-
-
-
