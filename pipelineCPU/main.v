@@ -53,14 +53,14 @@ module main#(parameter ADDR_BITS = 12)(clk,SW,SEG,AN);
     
     CPU #(ADDR_BITS)cpu(.clk(clk_N),.rst(rst),.go(go),
                         .rom_data_out(rom_data_out), .ram_data_out(ram_data_out), .rom_addr(rom_addr), 
-                        .ram_addr(ram_addr),.ram_data_in(ram_data_in), .ram_sel(ram_sel), .ram_rw(ram_rw), 
+                        .ram_addr(ram_addr),.ram_data_in(ram_data_in), .ram_sel(ram_sel), .ram_rw(ram_rw), .ram_extend_type(ram_extend_type),
 			            .total_cycles(total_cycles), .uncondi_branch_num(uncondi_branch_num), .condi_branch_num(condi_branch_num), 
 			            .bubble_num(bubble_num),.led_cpu_enable(led_cpu_enable),.led_data_in(led_data_in));
 
     ROM rom(.rom_addr(rom_addr),.rom_data_out(rom_data_out));
     
     
-    RAM #(ADDR_BITS)ram(.clk(clk_N),.rst(rst),.ram_rw(ram_rw),
+    RAM #(ADDR_BITS)ram(.clk(clk_N),.rst(rst),.ram_rw(ram_rw),.ram_extend_type(ram_extend_type),
                         .ram_sel(ram_sel),.ram_addr(ram_addr),.ram_data_in(ram_data_in),
                         .ram_data_out(ram_data_out),.ram_display_addr(ram_display_addr),.ram_display_data_out(ram_display_data_out));
   
