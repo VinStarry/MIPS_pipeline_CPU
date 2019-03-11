@@ -42,7 +42,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     wire con_if,uncon_if;
     wire Rst1,Rst2,Rst3,Rst4;
     wire Enable1,Enable2,Enable3,Enable4;
-    wire IF_Effective,ID_Effective,EX_Effective,MEM_Effective;
+    wire IF_Effective,ID_Effective,EX_Effective,MEM_Effective,WB_Effective;
     wire [31:0]IF_IR,ID_IR,EX_IR,MEM_IR,WB_IR;
     wire [31:0]IF_PC,ID_PC,EX_PC,MEM_PC,WB_PC;
     
