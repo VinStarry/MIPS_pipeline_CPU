@@ -70,7 +70,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     wire pc_enable;
     wire [1:0]pc_select;
     wire [31:0]next_pc,b_pc,j_pc,jr_pc,right_pc,cur_pc;
-    wire Rst1,Rst2,Rst3,Rst4,WB_Rst;
+    wire Rst1,Rst2,Rst3,Rst4;
     wire Enable1,Enable2,Enable3,Enable4;
     wire IF_Effective,ID_Effective,EX_Effective,MEM_Effective;
     wire [31:0]IF_IR,ID_IR,EX_IR,MEM_IR,WB_IR;
@@ -90,9 +90,11 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     assign next_pc = cur_pc+8'h00000004;
     assign Rst1=rst|con_if|uncon_if;
     assign Enable1=HALT|LoadUse;
+    assign IF_Effective=1'b1;
+    assign IF_PC=next_pc;
+    assign IF_IR=rom_data_out;
     
-    
-    IF_ID if_id(clk,Enable1,Rst1,1'b1,ID_Effective,rom_data_out,IF_IR,next_pc,IF_PC);
+    IF_ID if_id(clk,Enable1,Rst1,IF_Effective,IF_PC,IF_IR,ID_Effective,ID_PC,ID_IR);
     
     
     /*ID:Instruction fetch stage*/
@@ -116,7 +118,6 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     
     wire [5:0]Dst_no,ID_RD_no,WB_RD_no;
     wire [31:0]signedImm,unsignedImm,ID_Imm;
-    wire 
     
     assign OP=ID_IR[31:26];
     assign Func=ID_IR[5:0];
