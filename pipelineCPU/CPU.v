@@ -131,16 +131,77 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     
                                   
     /*EX:Execution stage*/
+    wire EX_Syscall, EX_JAL, EX_MemWrite, EX_JR, EX_JMP, EX_Beq, EX_Bne, EX_AluSrcB, EX_My_B_Signal;
+    wire [1:0] EX_MemAccess;
+    wire [1:0] EX_R1_Forward;
+    wire [1:0] EX_R2_Forward;
+    wire [31:0] EX_R1_Data;
+    wire [31:0] EX_R2_Data;
+    wire [4:0] EX_RD_no;
+    wire [31:0] EX_Imm;
+    wire [4:0] EX_Shamt;
+    wire [25:0] EX_J_Addr;
+    wire [3:0] EX_AluOP;
+    wire EX_Enable;
+    
+    wire [31:0]MEM_Redirect;
+    wire [31:0]EX_Redirect;
+    wire [31:0]EX_jump_addr_extend;
+   
+    wire [31:0]EX_alu_a_input;
+    wire [31:0]EX_alu_b_input;
+    wire [31:0]EX_alu_b_final_input;
+    wire EX_alu_equal;
+    wire [31:0]EX_alu_result1;
+    wire [31:0]EX_alu_result2;
 
+    Mux2_4 #(32)alu_src_a_mux(EX_R1_Forward, EX_R1_Data, MEM_Redirect, EX_Redirect, EX_Redirect, EX_alu_a_input);
+    Mux2_4 #(32)alu_src_b_mux(EX_R2_Forward, EX_R2_Data, MEM_Redirect, EX_Redirect, EX_Redirect, EX_alu_b_input);
+    Mux1_2 #(32)alu_src_b_final_mux(EX_AluSrcB, EX_alu_b_input, EX_Imm, EX_alu_b_final_input);
+   
+    ALU EX_alu(.alu_a_data(EX_alu_a_input), .alu_b_data(EX_alu_b_final_input), 
+    .alu_op(EX_AluOP), .alu_shmat(EX_Shamt), .alu_equal(EX_alu_equal), .alu_result1(EX_alu_result1), .alu_result2(EX_alu_result2));
+    
+    assign con_if = (EX_Beq & EX_alu_equal) | (EX_Bne & (~EX_alu_equal)) /* | (B - instruction)*/;
+    assign uncon_if = EX_JAL | EX_JR | EX_JMP;
+    
+    assign b_pc = (EX_Imm << 2) + EX_PC;  
+    Extender #(26, 32, 0)j_addr_ext
+            (.ext_data_in(EX_J_Addr), .ext_data_out(EX_jump_addr_extend));
+    assign j_pc = EX_jump_addr_extend << 2;
 
+    assign Enable3 = (~go) & HALT;
+    assign Rst3 = rst;
 
     /*MEM:Access memory stage*/
-
-
+    wire MEM_Syscall;
+    wire MEM_JAL;
+    wire MEM_MemWrite;
+    wire MEM_MemToReg;
+    wire [31:0]MEM_Alu_Result;
+    wire [31:0]MEM_R1_data;
+    wire [31:0]MEM_R2_data;
+    wire [4:0]MEM_Rd_no;
+    wire MEM_ram_sel;
+    wire [1:0]MEM_MemAccess;
+    
+    assign ram_addr = MEM_Alu_Result[11:2];
+    assign ram_data_in = MEM_R2_data;
+    assign ram_sel = (MEM_MemAccess == 2'b00) ? (4'b1111) :
+                         (MEM_MemAccess == 2'b01) ? (MEM_Alu_Result[1] ? 4'b0011 : 4'b1100) :
+                         (MEM_MemAccess == 2'b10) ? (4'b0001 << MEM_Alu_Result[1:0])
+                         : 4'b0000;
+    assign ram_rw = MEM_MemWrite;
+    assign ram_extend_type = 1'b0; // 0-extend
+    
+    Mux1_2 #(32)MEM_result(MEM_MemToReg, MEM_Alu_Result, ram_data_out, EX_Redirect);
+    
+    assign Enable4 = (~go) & HALT;
+    assign Rst4 = rst;
     
     /*WB:Write back stage*/
     wire WB_Syscall,WB_JAL,WB_RegWrite;
-    wire [31:0]WB_R1_Data,WB_R2_Data,MEM_Redirect;
+    wire [31:0]WB_R1_Data,WB_R2_Data;
     
     Mux1_2 #(32)selWBData(WB_JAL,MEM_Redirect,WB_IR,WB_RD_Data);
 
@@ -177,6 +238,16 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
                 EX_Beq,EX_Bne,EX_AluOP,EX_AluSrcB,EX_MemAccess,EX_My_B_Signal,EX_R1_Data,EX_R2_Data,
                 EX_RD_no,EX_Imm,EX_Shamt,EX_J_Addr,EX_R1_Forward,EX_R2_Forward);
     
-
+    EX_MEM ex_mem(clk, Enable3, Rst3,
+                  EX_Effective, EX_IR, EX_PC, EX_Syscall, EX_JAL, EX_RegWrite, EX_MemToReg, EX_MemWrite,
+                  EX_MemAccess, EX_alu_result1, EX_alu_a_input, EX_alu_b_input, EX_RD_no, 
+                  MEM_Effective, MEM_IR, MEM_PC, MEM_Syscall, MEM_JAL, MEM_RegWrite, MEM_MemToReg, MEM_MemWrite,
+                  MEM_MemAccess, MEM_Alu_Result, MEM_R1_data, MEM_R2_data, MEM_Rd_no);
+    
+    MEM_WB mem_wb(clk, Enable4, Rst4,
+                  MEM_Effective, MEM_IR, MEM_PC, MEM_Syscall, MEM_JAL, MEM_RegWrite, EX_Redirect,
+                  MEM_R1_data, MEM_R2_data, MEM_Rd_no, 
+                  WB_Effective, WB_IR, WB_PC, WB_Syscall, WB_JAL, WB_RegWrite, MEM_Redirect, 
+                  WB_R1_Data, WB_R2_Data, WB_RD_no);
 
 endmodule
