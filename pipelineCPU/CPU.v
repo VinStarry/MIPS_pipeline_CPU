@@ -142,7 +142,6 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     wire [4:0] EX_Shamt;
     wire [25:0] EX_J_Addr;
     wire [3:0] EX_AluOP;
-    wire EX_Enable;
     
     wire [31:0]MEM_Redirect;
     wire [31:0]EX_Redirect;
@@ -169,9 +168,11 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     Extender #(26, 32, 0)j_addr_ext
             (.ext_data_in(EX_J_Addr), .ext_data_out(EX_jump_addr_extend));
     assign j_pc = EX_jump_addr_extend << 2;
-
+    assign jr_pc = EX_alu_a_input;
+    assign JR = EX_JR;
     assign Enable3 = (~go) & HALT;
     assign Rst3 = rst;
+    assign EX_WriteReg = EX_RD_no;
 
     /*MEM:Access memory stage*/
     wire MEM_Syscall;
@@ -181,8 +182,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     wire [31:0]MEM_Alu_Result;
     wire [31:0]MEM_R1_data;
     wire [31:0]MEM_R2_data;
-    wire [4:0]MEM_Rd_no;
-    wire MEM_ram_sel;
+    wire [4:0]MEM_RD_no;
     wire [1:0]MEM_MemAccess;
     
     assign ram_addr = MEM_Alu_Result[11:2];
@@ -193,6 +193,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
                          : 4'b0000;
     assign ram_rw = MEM_MemWrite;
     assign ram_extend_type = 1'b0; // 0-extend
+    assign MEM_WriteReg = MEM_RD_no;
     
     Mux1_2 #(32)MEM_result(MEM_MemToReg, MEM_Alu_Result, ram_data_out, EX_Redirect);
     
@@ -242,11 +243,11 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
                   EX_Effective, EX_IR, EX_PC, EX_Syscall, EX_JAL, EX_RegWrite, EX_MemToReg, EX_MemWrite,
                   EX_MemAccess, EX_alu_result1, EX_alu_a_input, EX_alu_b_input, EX_RD_no, 
                   MEM_Effective, MEM_IR, MEM_PC, MEM_Syscall, MEM_JAL, MEM_RegWrite, MEM_MemToReg, MEM_MemWrite,
-                  MEM_MemAccess, MEM_Alu_Result, MEM_R1_data, MEM_R2_data, MEM_Rd_no);
+                  MEM_MemAccess, MEM_Alu_Result, MEM_R1_data, MEM_R2_data, MEM_RD_no);
     
     MEM_WB mem_wb(clk, Enable4, Rst4,
                   MEM_Effective, MEM_IR, MEM_PC, MEM_Syscall, MEM_JAL, MEM_RegWrite, EX_Redirect,
-                  MEM_R1_data, MEM_R2_data, MEM_Rd_no, 
+                  MEM_R1_data, MEM_R2_data, MEM_RD_no, 
                   WB_Effective, WB_IR, WB_PC, WB_Syscall, WB_JAL, WB_RegWrite, MEM_Redirect, 
                   WB_R1_Data, WB_R2_Data, WB_RD_no);
 
