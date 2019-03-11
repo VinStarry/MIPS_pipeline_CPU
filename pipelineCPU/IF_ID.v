@@ -40,9 +40,9 @@ module IF_ID(
 	input Effective_in,
 	input [31:0]PC_in,
 	input [31:0]IR_in,
-	output reg [31:0]PC_out,
-	output reg [31:0]IR_out,
-	output reg Effective_out
+	output reg Effective_out,
+    output reg [31:0]PC_out,
+	output reg [31:0]IR_out
 	// input pre_jmp_in,
 	// input hit_in,
 	// output reg pre_jmp_out,
