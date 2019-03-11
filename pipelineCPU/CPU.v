@@ -60,7 +60,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     Register #(32)PC(clk, rst, pc_enable, right_pc, cur_pc);
     
     assign rom_data_out = cur_pc[11:2];
-    assign next_pc = cur_pc+8'h00000004;
+    assign next_pc = cur_pc+4;
     assign Rst1=rst|con_if|uncon_if;
     assign Enable1=HALT|LoadUse;
     assign IF_Effective=1'b1;
@@ -87,7 +87,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     wire [1:0]ID_MemAccess;
     wire [3:0]ID_AluOP;
     
-    wire [5:0]Dst_no,ID_RD_no,WB_RD_no;
+    wire [4:0]Dst_no,ID_RD_no,WB_RD_no;
     wire [31:0]signedImm,unsignedImm,ID_Imm;
     wire [1:0]ID_R1_Forward,ID_R2_Forward;
     wire [31:0]ID_R1_Data,ID_R2_Data,WB_RD_Data;
@@ -105,9 +105,9 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     RegisterUsage usage(OP,Func,R1_Used,R2_Used);
     CorrelationDetec detec(R1_Used,R2_Used,EX_RegWrite,MEM_RegWrite,R1_no,R2_no,EX_WriteReg,MEM_WriteReg,
                            R1_EX_Related,R1_MEM_Related,R2_EX_Related,R2_MEM_Related);
-       
+    
     Controller controller(OP,Func,ID_Beq,ID_Bne,ID_MemToReg,ID_MemWrite,
-                          ID_AluOP,ID_RegWrite,RegDst,SignedExt,ID_JAL,
+                          ID_AluOP,ID_AluSrcB,ID_RegWrite,RegDst,SignedExt,ID_JAL,
                           ID_JMP,ID_JR,ID_MemAccess,ID_Syscall,ID_My_B_Signal);  
                           
     Mux1_2 #(5)selRS(ID_Syscall,RS,5'b00010,R1_no);
@@ -123,7 +123,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     Mux1_2 #(32)selExt(SignedExt,unsignedImm,signedImm,ID_Imm);
     
     
-    assign LoadUse=EX.MemToReg&(R1_EX_Related|R2_EX_Related);
+    assign LoadUse=EX_MemToReg&(R1_EX_Related|R2_EX_Related);
     assign ID_R1_Forward={R1_EX_Related,R1_MEM_Related};
     assign ID_R2_Forward={R2_EX_Related,R2_MEM_Related};
     assign Rst2=rst|con_if|uncon_if|LoadUse;
