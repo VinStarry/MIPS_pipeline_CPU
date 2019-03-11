@@ -52,23 +52,13 @@ module LED(
         cnt <= cnt + 1;
         if(cnt == 8) cnt <= 0;
 
-        
         case(display_op)
-                3'b000: 
-                begin
-                if(led_cpu_enable == 1) data <= led_data_in;
-                end
-                
+                3'b000: data <= led_data_in;
                 3'b001: data <= total_cycles_bcd;
-                
                 3'b011: data <= uncondi_branch_num_bcd;
-                
-                3'b101:data <= bubble_num_bcd;
-            
+                3'b101: data <= bubble_num_bcd;
                 3'b111: data <= condi_branch_num_bcd;
-
                 3'b010: data <= ram_display_data_out;
-               
                 default:data <= 0;
                 endcase
         end
