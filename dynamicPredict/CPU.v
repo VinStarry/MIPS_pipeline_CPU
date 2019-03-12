@@ -188,7 +188,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     assign ram_addr = MEM_Alu_Result[11:2];
     assign ram_data_in = MEM_R2_data;
     assign ram_sel = (MEM_MemAccess == 2'b00) ? (4'b1111) :
-                         (MEM_MemAccess == 2'b01) ? (MEM_Alu_Result[1] ? 4'b0011 : 4'b1100) :
+                         (MEM_MemAccess == 2'b01) ? (MEM_Alu_Result[1] ? 4'b1100 : 4'b0011) :
                          (MEM_MemAccess == 2'b10) ? (4'b0001 << MEM_Alu_Result[1:0])
                          : 4'b0000;
     assign ram_rw = MEM_MemWrite;
