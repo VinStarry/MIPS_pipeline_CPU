@@ -44,10 +44,10 @@ led_cpu_enable
  //attention: ram_addr [11:0]
 
 
- //my_B_signal :bgez
+ //my_B_signal :BLTZ
 
 module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, rom_addr, ram_addr,
-            ram_data_in, ram_sel, ram_rw, total_cycles, uncondi_branch_num, condi_branch_num, led_data_in, led_cpu_enable);
+            ram_data_in, ram_sel, ram_rw,ram_type, total_cycles, uncondi_branch_num, condi_branch_num, led_data_in, led_cpu_enable);
 
 	input clk, rst, go;
 	input [31:0]rom_data_out;
@@ -60,7 +60,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     output [31:0]uncondi_branch_num;
 	output [31:0]led_data_in;
 	output [3:0]ram_sel; 
-	output ram_rw, led_cpu_enable;
+	output ram_rw,ram_type, led_cpu_enable;
 
 
     //split
@@ -86,7 +86,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
 
     /*Controler*/
     wire beq, bne, mem_to_reg, mem_write, alu_src_b, reg_write, reg_dst, signed_ext, jal, jmp, jr, syscall;
-    wire my_B_signal; //my signal
+    wire bltz; //my signal
     wire[3:0] alu_op;
     wire[1:0] my_A_signal;
     
@@ -122,7 +122,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
                         .beq(beq), .bne(bne), .mem_to_reg(mem_to_reg), .mem_write(mem_write),
                         .alu_op(alu_op), .alu_src_b(alu_src_b), .reg_write(reg_write), .reg_dst(reg_dst),
                         .signed_ext(signed_ext), .jal(jal), .jmp(jmp), .jr(jr),
-                        .my_A_signal(my_A_signal), .syscall(syscall), .my_B_signal(my_B_signal));
+                        .my_A_signal(my_A_signal), .syscall(syscall), .bltz(bltz),.ram_type(ram_type));
     
 
     /*Extender*/   
@@ -139,7 +139,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
    	Mux1_2 #(5)reg2_no_mux(.mux_select(syscall), .mux_data_in_0(rt), .mux_data_in_1(5'b00100), .mux_data_out(reg2_no));
    	Mux1_2 #(5)reg_no_in_mux_1(.mux_select(reg_dst), .mux_data_in_0(rt), .mux_data_in_1(rd), .mux_data_out(reg_no_in_mid));
    	Mux1_2 #(5)reg_no_in_mux_2(.mux_select(jal), .mux_data_in_0(reg_no_in_mid), .mux_data_in_1(5'b11111), .mux_data_out(reg_no_in));
-   	Mux1_2 #(32)alu_srcb_mux(.mux_select(alu_src_b), .mux_data_in_0(reg2_data), .mux_data_in_1(imm_signed_extend), .mux_data_out(alu_srcb_data));
+   	Mux1_2 #(32)alu_srcb_mux(.mux_select(alu_src_b), .mux_data_in_0(reg2_data), .mux_data_in_1(imm_extend), .mux_data_out(alu_srcb_data));
     
     //bgez
    	//Mux1_2 #(32) alu_bgez_mux(.mux_select(bgez), .mux_data_in_0(alu_srcb_data), .mux_data_in_1(0), .mux_data_out(alu_b_data));
@@ -179,18 +179,17 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     Mux1_2 #(32) din_jal_mux(.mux_select(jal), .mux_data_in_0(to_reg_data), .mux_data_in_1(next_pc), .mux_data_out(din_jal));
     assign reg_data_in = din_jal;
 
-
     //pc_enable   
     assign halt = ((reg1_data != 34) & syscall);
     assign led_cpu_enable = ((reg1_data == 34) & syscall);//((reg1_data == 34) & syscall);
     assign led_data_in = reg2_data;//reg2_data;
-    assign pc_enable = go & (!halt);
+    assign pc_enable = go | (!halt);
 
 
     /*counter*/  
     assign uncon_if = jal | jmp | jr;
     //bgez: assign con_if = (bgez & (!alu_result1)) | (bne & (!alu_equal)) | (beq & alu_equal);
-    assign con_if = (bne & (!alu_equal)) | (beq & alu_equal);
+    assign con_if = (bne & (!alu_equal)) | (beq & alu_equal) | (bltz & (alu_result1));
 
     Counter #(32) total_cycles_counter(.clk(clk), .rst(rst), .counter_enable(pc_enable), .counter_data_out(total_cycles));
     Counter #(32) condi_branch_num_counter(.clk(clk), .rst(rst), .counter_enable(con_if), .counter_data_out(condi_branch_num));

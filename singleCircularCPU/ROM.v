@@ -28,7 +28,7 @@ module ROM(rom_addr,rom_data_out);
 
     initial
     begin
-        $readmemh("code.hex",data,0,1<<9-1);
+        $readmemh("code.hex",data,0,((1<<9)-1));
     end
 
     assign rom_data_out = data[rom_addr];
