@@ -161,7 +161,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
     ALU EX_alu(.alu_a_data(EX_alu_a_input), .alu_b_data(EX_alu_b_final_input), 
     .alu_op(EX_AluOP), .alu_shmat(EX_Shamt), .alu_equal(EX_alu_equal), .alu_result1(EX_alu_result1), .alu_result2(EX_alu_result2));
     
-    assign con_if = (EX_Beq & EX_alu_equal) | (EX_Bne & (~EX_alu_equal)) /* | (B - instruction)*/;
+    assign con_if = (EX_Beq & EX_alu_equal) | (EX_Bne & (~EX_alu_equal)) | (EX_My_B_Signal & (~EX_alu_result1[0])) /* | (B - instruction)*/;
     assign uncon_if = EX_JAL | EX_JR | EX_JMP;
     
     assign b_pc = (EX_Imm << 2) + EX_PC;  
@@ -192,7 +192,7 @@ module CPU#(parameter ADDR_BITS=12)(clk, rst, go, rom_data_out, ram_data_out, ro
                          (MEM_MemAccess == 2'b10) ? (4'b0001 << MEM_Alu_Result[1:0])
                          : 4'b0000;
     assign ram_rw = MEM_MemWrite;
-    assign ram_extend_type = 1'b0; // 0-extend
+    assign ram_extend_type = (MEM_MemAccess == 2'b01)?1'b1:1'b0; // 0-extend
     assign MEM_WriteReg = MEM_RD_no;
     
     Mux1_2 #(32)MEM_result(MEM_MemToReg, MEM_Alu_Result, ram_data_out, EX_Redirect);
