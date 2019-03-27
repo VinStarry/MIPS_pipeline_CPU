@@ -1,18 +1,21 @@
-# MIPS_pipline_CPU
-Design and synthesis of a MIPS pipeline CPU....
+# MIPS_Pipeline_CPU(项目已结束、文档持续更新中)
 
-SW[0]: 暂停、运行。=1, 运行；=0，暂停。     
-SW[1]: 复位。=1，归0；=0，正常运行。   
-SW[2]: 改变频率。上升沿时，频率=频率/2，有四种频率：1HZ, 0.5HZ, 0.25HZ, 0.125HZ，继续拨动会回调至1HZ    
-SW[5:3]: display_op[2:0]，显示内容控制    
-SW[15:6]: ram_display_addr[15:6]，显示信息的ram地址    
+## MIPS 单周期CPU
 
-# xyx's 28 instrs
-add 4 CCMB instructions based on the task.  
-4 instructions are  
-SLRV----> shift logical right variable  
-XOR ----> exclusive or  
-LBU ----> load byte unsigned  
-BLEZ----> branch on less or equal than  
-Already tested on FPGA.
+顶层通路图:
 
+![total_single_circular](./images/total_single_circular.jpg)
+
+原理通路图:
+
+![](./images/img.jpg)
+
+单周期通路图(Logisim):
+
+![](./images/scCPU_circ.jpg)
+
+FPGA版本在master分支
+
+# MIPS流水线CPU
+
+正在写报告，预计三天内更新。。。
