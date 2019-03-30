@@ -1,4 +1,4 @@
-# MIPS_Pipeline_CPU(项目已结束、文档持续更新中)
+# MIPS_Pipeline_CPU
 
 ## MIPS 单周期CPU
 
@@ -14,8 +14,30 @@
 
 ![](./images/scCPU_circ.jpg)
 
-FPGA版本在master分支
+FPGA主函数:  
+
+![img1](./images/img1.jpg)
+
+FPGA CPU内部数据s通路:  
+
+![img2](./images/img2.jpg)
 
 # MIPS流水线CPU
 
-正在写报告，预计三天内更新。。。
+5段流水基本思想:  
+
+![phases](./images/phases.jpg)
+
+分支气泡+数据重定向流水Logisim
+
+![img3](./images/img3.jpg)
+
+FPGA主函数
+
+![img1](./images/img5.jpg)
+
+CPU内部数据通路
+
+![img4](./images/img4.jpg)
+
+## 分支预测和中断详情请见Logisim电路
